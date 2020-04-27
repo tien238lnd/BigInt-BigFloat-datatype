@@ -10,7 +10,7 @@ void QInt::setBit(char i, bool b)
 }
 
 
-bool QInt::getBit(char i)
+bool QInt::getBit(char i) const
 {
 	return (this->bytes[i / 16] >> i % 16) & 1;
 }
