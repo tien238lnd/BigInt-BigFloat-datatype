@@ -1,13 +1,19 @@
 #include "QInt.h"
 
-void setBit1(int &x, char i)	// LSB is 0
+
+void QInt::setBit(char i, bool b)
 {
-	x = x | (1 << i);
+	if (b == 1)
+		this->bytes[i / 16] = this->bytes[i / 16] | (1 << i % 16);
+	else
+		this->bytes[i / 16] = this->bytes[i / 16] & ~(1 << i % 16);
 }
 
-bool getBit(int x, char i)	// LSB is 0
+
+bool QInt::getBit(char i)
 {
-	return (x >> i) & 1;
+	return (this->bytes[i / 16] >> i % 16) & 1;
 }
+
 
 void convertToComplement(QInt &x);
