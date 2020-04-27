@@ -1,47 +1,52 @@
-﻿#pragma once
-#include <iostream>
-#include <string>
+#ifndef _QInt_h_
+#define _QInt_h_
+
+class DeQInt
+{
+private:
+	static const int numbytes = 39;
+	char bytes[numbytes];
+public:
+	DeQInt();
+	DeQInt(const DeQInt&);
+	DeQInt(const char*);
+
+public:
+	char getAt(char index);
+	void setAt(char index, char value);
+public:
+	//DeQInt& operator=(const DeQInt& other);
+	//DeQInt& operator=(const char* other);
+public:
+	bool checkNegative();
+	bool checkZero();
+	void convertToPositive();
+
+	char devidedBy2();
+	bool multipliedBy2();
+	bool added1();
+};
+
 
 class QInt
 {
-	char Q[16];
+private:
+	static const int numbytes = 16;
+	static const int numbits = 128;
+	char bytes[numbytes];
 public:
-	QInt& operator=(QInt& des);
-	QInt& operator=(std::string str);
-	
-friend std::istream& operator<<(std::istream& istr, QInt& qi);
-friend std::ostream& operator>>(std::ostream& istr, QInt& qi);
-	
-friend bool* DectoBin(QInt x);
-friend QInt BintoDec(bool* bit);
+	QInt();
+	QInt(const QInt&);
+	QInt(const char*);
+private:
+	void setBit(char, char);
+	char getBit(char);
+public:
+	void convertTo2sComplement();
+	void DeQIntToQInt(const DeQInt&);
+	void DecToQInt(const char*);
+public:
 
-friend char* DectoHex(QInt x);
-friend QInt HextoDec(char* hex);
-
-friend QInt operator+(QInt &x, QInt &y);
-friend QInt operator-(QInt &x, QInt &y);
-friend QInt operator*(QInt &x, QInt &y);
-friend QInt operator/(QInt &x, QInt &y);
-
-// có viết mấy hàm +=, ++ đồ ko?	=> Ko
-
-friend bool operator==(QInt &x, QInt &y);
-friend bool operator!=(QInt &x, QInt &y);
-friend bool operator<(QInt &x, QInt &y);
-friend bool operator>(QInt &x, QInt &y);
-friend bool operator<=(QInt &x, QInt &y);
-friend bool operator>=(QInt &x, QInt &y);
-
-friend QInt operator&(QInt &x, QInt &y);
-friend QInt operator|(QInt &x, QInt &y);
-friend QInt operator^(QInt &x, QInt &y);
-friend QInt operator~(QInt &x);
-
-friend QInt operator>>(QInt &x, int i);
-friend QInt operator<<(QInt &x, int i);
-friend QInt rol(QInt &x, int i);
-friend QInt ror(QInt &x, int i);
 };
 
-char* BintoHex(bool* bit);
-bool* HextoBin(char* hex);
+#endif /*_QInt_h*/_
