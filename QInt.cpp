@@ -129,6 +129,9 @@ std::string QInt::DectoBin() const	// QInt to "101010" string, use for output fu
 			outBinStr += charDigit[0];
 		}
 	}
+	
+	if (outBinStr.length() == 0) { outBinStr = "0"; }
+
 	return outBinStr;
 }
 
@@ -165,6 +168,9 @@ std::string QInt::DectoHex() const
 		}
 
 	}
+	
+	if (outHexStr.length() == 0) { outHexStr = "0"; }
+
 	return outHexStr;
 }
 
