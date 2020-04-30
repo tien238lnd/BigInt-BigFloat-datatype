@@ -1,5 +1,12 @@
 #include "DecString.h"
 
+DecString::DecString()
+{
+	for (int i = 0; i < DecString::NUMBYTES; i++)
+	{
+		bytes[i] = '0';
+	}
+}
 DecString::DecString(std::string src)
 {
 
@@ -12,13 +19,7 @@ DecString::DecString(std::string src)
 	thresPoint++;
 	for (; i < DecString::NUMBYTES; i++) { bytes[i] = src[i - thresPoint]; }
 }
-DecString::DecString()
-{
-	for (int i = 0; i < DecString::NUMBYTES; i++)
-	{
-		bytes[i] = '0';
-	}
-}
+
 
 bool DecString::isZero()
 {
