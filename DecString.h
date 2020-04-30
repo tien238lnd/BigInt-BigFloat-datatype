@@ -1,26 +1,34 @@
 #pragma once
+#include <string>
 
+//class DecString use to handle the conversion between decimal string and QInt
+//"938657134268276439" to QInt
+class DecString
+{
+	static const int NUMBYTES = 40;
+	char bytes[NUMBYTES];
 
-static const int numbytes = 39;
-char bytes[numbytes];		// "123456789012345678901234567890"
+public:
+	//default constructor
+	//set to the zero value
+	DecString();
 
-DecString();
-DecString(const DecString&);
-DecString(const char*);
+	//Constructor from a decimal string 
+	DecString(std::string src);
 
+	//check if the number is a zero value
+	bool isZero();
 
-char getAt(char index);
-void setAt(char index, char value);
+	//divide this DecString by 2, assign the result to itselt
+	//return the remainder of the division
+	bool dividedBy2();
 
-//DecString& operator=(const DecString& other);
-//DecString& operator=(const char* other);
+	//multiply this DecString by 2, assign the result to itselt
+	void multipliedBy2();
 
-bool checkNegative();
-bool checkZero();
-void convertToPositive();
+	//add 1 to this DecString
+	void added1();
 
-char devidedBy2();
-bool multipliedBy2();
-bool added1();
-
-
+	//get the string to print of this DecString
+	std::string getString();
+};
