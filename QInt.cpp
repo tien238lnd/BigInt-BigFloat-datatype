@@ -2,7 +2,7 @@
 
 QInt::QInt()
 {
-	memset(bytes, '0', QInt::NUMBYTES);
+	memset(bytes, 0, QInt::NUMBYTES);
 }
 QInt::QInt(const QInt& src)
 {
