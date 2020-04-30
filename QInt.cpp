@@ -647,7 +647,7 @@ bool operator>=(const QInt& x, const QInt& y) {
 QInt operator&(const QInt & x, const QInt & y)
 {
 	QInt ans;
-	for (int i = 0; i < 128; i++)
+	for (int i = 0; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(i) & y.getBit(i));
 	return ans;
 }
@@ -655,7 +655,7 @@ QInt operator&(const QInt & x, const QInt & y)
 QInt operator|(const QInt & x,const QInt & y)
 {
 	QInt ans;
-	for (int i = 0; i < 128; i++)
+	for (int i = 0; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(i) | y.getBit(i));
 	return ans;
 }
@@ -663,7 +663,7 @@ QInt operator|(const QInt & x,const QInt & y)
 QInt operator^(const QInt & x,const QInt & y)
 {
 	QInt ans;
-	for (int i = 0; i < 128; i++)
+	for (int i = 0; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(i) ^ y.getBit(i));
 	return ans;
 }
@@ -672,60 +672,60 @@ QInt operator~(const QInt & x)
 
 {
 	QInt ans;
-	for (int i = 0; i < 128; i++)
+	for (int i = 0; i < QInt::NUMBITS; i++)
 		ans.setBit(i, !(x.getBit(i)));
 	return ans;
 }
 
 QInt operator>>(const QInt & x, int k)	// cài đặt bên trong là << - left shift, lấy bit dấu tận cùng bên phải fill vào
 {
-	k = k % 128;
+	k = k % QInt::NUMBITS;
 	if (k == 0)
 		return x;
 	QInt ans;
-	for (int i = 0; i < 127 - k; i++)
+	for (int i = 0; i < QInt::NUMBITS - 1 - k; i++)
 		ans.setBit(i, x.getBit(i + k));
-	for (int i = 127 - k; i < 128; i++)
-		ans.setBit(i, x.getBit(127));
+	for (int i = QInt::NUMBITS - 1 - k; i < QInt::NUMBITS; i++)
+		ans.setBit(i, x.getBit(QInt::NUMBITS - 1));
 	return ans;
 }
 
 QInt operator<<(const QInt & x, int k)	// cài đặt bên trong là >> - right shift, lấy bit 0 fill vào
 {
-	k = k % 128;
+	k = k % QInt::NUMBITS;
 	if (k == 0)
 		return x;
 	QInt ans;
-	for (int i = 127; i >= k; i--)
+	for (int i = QInt::NUMBITS - 1; i >= k; i--)
 		ans.setBit(i, x.getBit(i - k));
-	for (int i = k-1; i >= 0; i--)
+	for (int i = k - 1; i >= 0; i--)
 		ans.setBit(i, 0);
 	return ans;
 }
 
 QInt rol(const QInt & x, int k)	// cài đặt bên trong là xoay phải
 {
-	k = k % 128;
+	k = k % QInt::NUMBITS;
 	if (k == 0)
 		return x;
 	QInt ans;
 	for (int i = 0; i < k; i++)
-		ans.setBit(i, x.getBit(128 + i - k));
-	for (int i = k; i < 128; i++)
+		ans.setBit(i, x.getBit(QInt::NUMBITS + i - k));
+	for (int i = k; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(i - k));
 	return QInt();
 }
 
 QInt ror(const QInt & x, int k)	// cài đặt bên trong là xoay trái
 {
-	k = k % 128;
+	k = k % QInt::NUMBITS;
 	if (k == 0)
 		return x;
 	QInt ans;
-	for (int i = 0; i < 128 - k; i++)
+	for (int i = 0; i < QInt::NUMBITS - k; i++)
 		ans.setBit(i, x.getBit(i + k));
-	for (int i = 128 - k; i < 128; i++)
-		ans.setBit(i, x.getBit(i + k - 128));
+	for (int i = QInt::NUMBITS - k; i < QInt::NUMBITS; i++)
+		ans.setBit(i, x.getBit(i + k - QInt::NUMBITS));
 	return QInt();
 }
 
