@@ -334,206 +334,237 @@ std::ostream& operator<<(std::ostream& ostr, const QInt& qi)
 /////////////////////////////
 QInt operator+(const QInt& x, const QInt& y) {
 	QInt kq;
-	for (int i = 0; i < QInt::NUMBITS; i++)
+	bool nho = 0;
+	for (size_t i = 0; i < 128; i++)
 	{
-		bool nho = 0;
-		int a = x.getBit(i) + y.getBit(i);
-		if (a + nho == 2) {
+		short int a = x.getBit(i) + y.getBit(i);
+		if(a + nho == 2){
 			kq.setBit(i, 0);
 			nho = 1;
-		}
-		else if (a + nho >= 2) {
-			kq.setBit(i, 1);
+		}else if(a + nho >= 2){
+			kq.setBit(i,1);
 			nho = 1;
-		}
-		else
+		} else
 		{
-			kq.setBit(i, a);
+			kq.setBit(i,a + nho);
 			nho = 0;
 		}
 	}
-
 	return kq;
 }
 
 QInt operator-(const QInt& x, const QInt& y) {
 	QInt kq;
-	for (int i = 0; i < QInt::NUMBITS; i++)
+	bool nho = 0;
+	for (size_t i = 0; i < 128; i++)
 	{
-		bool nho = 0;
-		bool a = x.getBit(i);
+		bool a = x.getBit(i); 
 		bool b = y.getBit(i);
-		if (a - b - nho == -1) {
+		if(a - b - nho == -1){
 			kq.setBit(i, 1);
 			nho = 1;
-		}
-		else if (a - b - nho < -1) {
-			kq.setBit(i, 0);
+		}else if(a - b - nho < -1){
+			kq.setBit(i,0);
 			nho = 1;
-		}
-		else {
-			kq.setBit(i, a - b - nho);
+		} else{
+			kq.setBit(i,a -b -nho);
 			nho = 0;
 		}
 	}
-
 	return kq;
 }
 
-QInt operator*(const QInt& x, const QInt& y) {
 
+void QInt::Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi) {
+	bool nho = 0;
+	for (int i = dau; i <= duoi ; i++)
+	{
+		short int a = x.getBit(i) + y.getBit(i);
+		if (a + nho == 2) {
+			x.setBit(i, 0);
+			nho = 1;
+		}
+		else if (a + nho >= 2) {
+			x.setBit(i, 1);
+			nho = 1;
+		}
+		else
+		{
+			x.setBit(i, a + nho);
+			nho = 0;
+		}
+	}
+}
+void QInt::Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi) {
+	bool nho = 0;
+	for (int i = dau; i <= duoi ; i++)
+	{
+		bool a = x.getBit(i);
+		bool b = y.getBit(i);
+		if (a - b - nho == -1) {
+			x.setBit(i, 1);
+			nho = 1;
+		}
+		else if (a - b - nho < -1) {
+			x.setBit(i, 0);
+			nho = 1;
+		}
+		else {
+			x.setBit(i, a - b - nho);
+			nho = 0;
+		}
+	}
+}
+
+QInt operator*(const QInt &x, const QInt &y){
+	
 	QInt kq = y;
 	// mask dong vai tro nhu M trong thuat toan
-	QInt mask = x;
+	QInt mask = x ;
 	bool q_1 = 0; // dong vai tro q-1 
 	// dung de xet dau q1, xetdauq2
-	bool dauq1 = x.getBit(QInt::NUMBITS - 1);
-	bool dauq2 = y.getBit(QInt::NUMBITS - 1);
+	bool dauq1  = x.getBit(127)  ;
+	bool dauq2 = y.getBit(127);
 
 	// so bit cua multifier sau khi chuan hoa
 	unsigned int count = 0;
+	// so bit cua multican sau khi chuan hoa
+	unsigned int count2 = 0;
 
 	//chuan hoa so kq (boi vi dang truoc co the toan la so 1 hoac 0)
-	for (int i = QInt::NUMBITS - 1; i >= 0; i--)
+	for (int i = 127; i >= 0; i--)
 	{
 		bool a = kq.getBit(i);
-		bool b = kq.getBit(char(i - 1));
-		if (a && b)
-		{
+		bool b = kq.getBit(i - 1);
+
+		if (a == b) {
 			if (a)
 			{
 				kq.setBit(i, 0);
 			}
 		}
-		else
-		{
-			if (a) { count = i + 1; }
-			count = i;
+		else {
+			count = i +1;
 			break;
 		}
 	}
-
-	//chuan hoa so bi chia (boi vi dang truoc co the toan la so 1 hoac 0)
-	for (char i = QInt::NUMBITS - 1; i >= 0; i--)
-	{
+	
+	//chuan hoa so bi nhan (boi vi dang truoc co the toan la so 1 hoac 0)
+	for (int i = 127; i >= 0; i--)
+	{	
 		bool a = mask.getBit(i);
 		bool b = mask.getBit(i - 1);
-		if (a && b)
+		if (a == b)
 		{
 			if (a)
 			{
-				mask.setBit(i, 0);
+				mask.setBit(i,0);
 			}
-		}
-		else {
+		}else{
+			count2 = i+1;
 			break;
 		}
 	}
-	// mask co dang 00000multifier00000 (khuc sau co so 0 bang so bits multifier)
-	mask << (count);
+	// mask co dang multilican00000 (khuc sau co so 0 bang so bits multifier)
+	mask = mask << count;
 
-	for (unsigned char i = 0; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
-		if (q_1 == 0 && kq.getBit(0) == 1) {
-			kq = kq - mask;
-		}
-		else if (q_1 == 1 && kq.getBit(0) == 0)
+		if(q_1 == 0 && kq.getBit(0) == 1){
+			kq.Trutrongkhoang(kq,mask,count,count + count2 - 1);
+		}else if (q_1 == 1 && kq.getBit(0) == 0)
 		{
-			kq = kq + mask;
+			kq.Congtrongkhoang(kq, mask, count, count + count2 - 1);
 		}
-		q_1 = kq.getBit(0);
-		kq >> 1;
-
+		q_1= kq.getBit(0);
+		 //temp de luu bit dau cua kq
+		bool temp = kq.getBit(count + count2 - 1);
+		kq = kq >> 1;
+		kq.setBit(count + count2 - 1,temp);
 	}
-
 
 	// luc nay ket qua van co the sai, vi can phai dien bit trong vao truoc do nua
 	// Neu nhu 2 so khac dau thi dien bit 1 vao truoc do
-	if (dauq1 && dauq2 == false) {
-		for (char i = QInt::NUMBITS - 1; i >= 0; i--)
+	if(dauq1 != dauq2){
+		for (int i = 127; i >= count + count2; i--)
 		{
-			if (kq.getBit(i) == false) {
-				kq.setBit(i, 1);
-			}
-			else { break; }
+			kq.setBit(i, 1);
 		}
-
 	}
 	return kq;
-
+	 
 }
 
-QInt operator/(const QInt& x, const QInt& y) {
+QInt operator/(const QInt &x, const QInt &y){
 
 	QInt sobichia = x;
 	QInt sochia = y;
 
 	//neu co so am -> chuyen ve so khong am
-	bool dau1 = sobichia.getBit(QInt::NUMBITS - 1);
-	bool dau2 = sochia.getBit(QInt::NUMBITS - 1);
-	if (!dau1) {
+	bool dau1 = sobichia.getBit(127);
+	bool dau2 = sochia.getBit(127);
+	if(dau1){
 		sobichia.convertTo2sComplement();
 	}
-	if (!dau2)
+	if (dau2)
 	{
 		sochia.convertTo2sComplement();
 	}
-
+	
 
 	// Danh dau do dai cua 2 so chia va bi chia
 	//vd : mark = 5 -> car so chia va so bi chia co do dai la 6 bits
-	unsigned int mark;
+	unsigned int mark; 
 
 	// vua xet xem so bi chia co lon hon so chia khong ? vua xet do dai
-	for (char i = QInt::NUMBITS - 1; i >= 0; i--)
+	for (int i = 127; i >= 0; i--)
 	{
 		bool a = sobichia.getBit(i);
 		bool b = sochia.getBit(i);
 
 		// Neu nhu so bi chia be hon so chia
-		if (a == 0 && b == 1)
+		if ( a == 0 && b == 1 )
 		{
 			// tra ve so Qint 0
-			return QInt("0");
-		}
-		else if (a == 1) {
+			QInt trave;
+			return trave;
+		}else if(a == 1){
 			mark = i;
+			break;
 		}
 	}
 
 	// mark se co dang sochia00000 (so luong bit 0 o phia sau bang so bit cua sobichia)
 	QInt mask = sochia;
-	mask << mark;
-
+	mask = mask << (mark +1);
+	
 	// dung de lap
 	unsigned int count = mark;
 
-	for (int i = count; i >= 1; i--)
+	for (int i = count; i >= 0; i--)
 	{
-		sobichia << 1;
-		sobichia = sobichia - mask;
-
+		sobichia = sobichia << 1;
+		sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
 		// kiem tra xem kq co am khong
-		if (sobichia.getBit(QInt::NUMBITS - 1))
+		if (sobichia.getBit(mark *2 +1))
 		{
-			sobichia.setBit(0, 0);
-			sobichia = sobichia + mask;
-
-		}
-		else
+			sobichia.setBit(0,0);
+			sobichia.Congtrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
+						
+		}else
 		{
-			sobichia.setBit(0, 1);
+			sobichia.setBit(0,1);
 		}
 	}
 
-	// Neu lay phan sobichia & 0000011111 (so luong bit 1 o phia sau bang so bit cua sobichia, so luong bit 0 bang mark)
-	for (unsigned char i = QInt::NUMBITS - 1; i > mark; i--)
+	// set bit 0 cho phan du thua
+	for (int i = mark + mark -1; i >= mark + 1 ; i--)
 	{
-		sobichia.setBit(i, 0);
+		sobichia.setBit(i,0);
 	}
-
+	
 	// neu 2 so am thi doi dau
-	if (!(dau1 && dau2)) {
+	if(dau1!=dau2){
 		sobichia.convertTo2sComplement();
 	}
 
@@ -555,16 +586,10 @@ bool operator==(const QInt& x, const QInt& y) {
 }
 
 bool operator!=(const QInt& x, const QInt& y) {
-	for (unsigned char i = 0; i < QInt::NUMBITS; i++)
-	{
-		if (x.getBit(i) == y.getBit(i))
-		{
-			return false;
-		}
-
+	if (x == y) {
+		return false;
 	}
 	return true;
-
 }
 
 bool operator>(const QInt& x, const QInt& y) {

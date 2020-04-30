@@ -55,6 +55,12 @@ private:
 	//convert to 2's complement of this number
 	void convertTo2sComplement();
 
+	// cong 2 so x va y trong khoang tu bit dau den bit duoi + 1(dau<duoi), luu ket qua vao x
+	// DE luu dau
+	// phuc vu cho * /
+	void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+	void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+
 public:
 	//convert QInt to a string show Binary value
 	//use for output in binary
