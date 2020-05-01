@@ -42,6 +42,11 @@ public:
 	//for hexadecimal: srcStr have "0x" in the front
 	QInt& operator=(const char* srcStr);	
 
+	//cast int to QInt
+	QInt& operator=(const int& x);
+	//cast QInt to int
+	int castToInt();
+	
 private:
 	//set the bit at position i the value b
 	//i=0 associate with LSB
@@ -82,14 +87,17 @@ public:
 	//use to convert binary string inBinStr to hexadecimal string outHexStr
 	friend void BinToHex(std::string inBinStr, std::string outHexStr);
 
+
+
 //input a QInt qi from istream istr
 friend std::istream& operator>>(std::istream& istr, QInt& qi);
 
 //output a QInt qi to the ostream ostr
 friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
 
-friend QInt operator+(int, const QInt& x);
-friend QInt operator-(int, const QInt& x);
+
+//friend QInt operator+(int, const QInt& x);
+//friend QInt operator-(int, const QInt& x);
 
 // Hiếu
 void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
@@ -122,3 +130,4 @@ friend QInt operator<<(const QInt &x, int k);
 friend QInt rol(const QInt &x, int k);
 friend QInt ror(const QInt &x, int k);
 };
+

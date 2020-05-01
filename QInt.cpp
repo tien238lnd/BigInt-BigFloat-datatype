@@ -1,5 +1,6 @@
 ﻿#include "QInt.h"
 
+
 QInt::QInt()
 {
 	memset(bytes, 0, QInt::NUMBYTES);
@@ -62,6 +63,41 @@ QInt& QInt::operator=(const char* srcStr)
 {
 	*this = QInt(std::string(srcStr));
 	return *this;
+}
+QInt& QInt::operator=(const int& x)
+{
+	char* p = (char*)&x;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			this->setBit(i * 8 + j, *(p + i) >> j & 1);
+		}
+	}
+
+	bool sign = this->getBit(31);
+	for (int i = 32; i < QInt::NUMBITS; i++)
+	{
+		this->setBit(i, sign);
+	}
+
+	return *this;
+}
+
+int QInt::castToInt()
+{
+	int ires = 0;
+	char* p = (char*)&ires;
+	
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			*(p + i) |= this->getBit(i * 8 + j) << j;
+		}
+	}
+
+	return ires;
 }
 
 void QInt::setBit(char i, bool b)
@@ -270,7 +306,10 @@ void QInt::DecStringToDec(std::string inDecStr)
 		isNegative = true;
 		inDecStr.erase(0, 1);
 	}
-
+	else if (inDecStr[0] == '+')
+	{
+		inDecStr.erase(0, 1);
+	}
 	//convert
 	DecString decsrc = DecString(inDecStr);
 
@@ -333,6 +372,7 @@ std::ostream& operator<<(std::ostream& ostr, const QInt& qi)
 
 	return ostr;
 }
+
 
 //QInt operator+(int, const QInt& x)
 //{
@@ -570,8 +610,8 @@ QInt operator/(const QInt& x, const QInt& y) {
 	{
 		sobichia = sobichia << 1;
 		bool behon = false;
-		
-		for (int k = 2 * mark + 1; k >= mark + 1; k--) 
+
+		for (int k = 2 * mark + 1; k >= mark + 1; k--)
 		{
 			if (sobichia.getBit(k) < mask.getBit(k)) {
 				behon = true;
@@ -582,13 +622,14 @@ QInt operator/(const QInt& x, const QInt& y) {
 				break;
 			}
 		}
-		
+
 		// kiem tra xem kq co am khong
 		if (behon)
 		{
 			sobichia.setBit(0, 0);
 
-		}else
+		}
+		else
 		{
 			sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
 			sobichia.setBit(0, 1);
@@ -608,7 +649,6 @@ QInt operator/(const QInt& x, const QInt& y) {
 	}
 
 	return sobichia;
-
 }
 
 bool operator==(const QInt& x, const QInt& y) {
