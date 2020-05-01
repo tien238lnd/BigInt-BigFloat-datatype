@@ -1,6 +1,5 @@
 ﻿#include "QInt.h"
 
-
 QInt::QInt()
 {
 	memset(bytes, 0, QInt::NUMBYTES);
@@ -570,27 +569,38 @@ QInt operator/(const QInt& x, const QInt& y) {
 	for (int i = count; i >= 0; i--)
 	{
 		sobichia = sobichia << 1;
-		sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
+		bool behon = false;
 		
+		for (int k = 2 * mark + 1; k >= mark + 1; k--) 
+		{
+			if (sobichia.getBit(k) < mask.getBit(k)) {
+				behon = true;
+				break;
+			}
+
+			if (sobichia.getBit(k) > mask.getBit(k)) {
+				break;
+			}
+		}
 		
 		// kiem tra xem kq co am khong
-		if (sobichia.getBit(mark * 2 + 1))
+		if (behon)
 		{
 			sobichia.setBit(0, 0);
-			sobichia.Congtrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
 
-		}
-		else
+		}else
 		{
+			sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
 			sobichia.setBit(0, 1);
 		}
 	}
 
 	// set bit 0 cho phan du thua
-	for (int i = mark + mark - 1; i >= mark + 1; i--)
+	for (int i = mark + mark + 1; i >= mark + 1; i--)
 	{
 		sobichia.setBit(i, 0);
 	}
+
 
 	// neu 2 so am thi doi dau
 	if (dau1 != dau2) {
