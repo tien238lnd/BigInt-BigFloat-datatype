@@ -40,8 +40,7 @@ public:
 	//for negative decimal: have "-" sign in the front
 	//for binary: srcStr have "0b" in the front
 	//for hexadecimal: srcStr have "0x" in the front
-	QInt& operator=(const char* srcStr);	// str này ở hệ 10 thôi phải ko?
-											// có nhận str kiểu như "0x12345ABC" hay "0b101110001" ko? CÓ
+	QInt& operator=(const char* srcStr);	
 
 private:
 	//set the bit at position i the value b
@@ -54,12 +53,6 @@ private:
 
 	//convert to 2's complement of this number
 	void convertTo2sComplement();
-
-	// cong 2 so x va y trong khoang tu bit dau den bit duoi + 1(dau<duoi), luu ket qua vao x
-	// DE luu dau
-	// phuc vu cho * /
-	void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
-	void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
 
 public:
 	//convert QInt to a string show Binary value
@@ -86,6 +79,8 @@ public:
 	//use for input from a decimal string
 	void DecStringToDec(std::string inDecStr);
 
+	//use to convert binary string inBinStr to hexadecimal string outHexStr
+	friend void BinToHex(std::string inBinStr, std::string outHexStr);
 
 //input a QInt qi from istream istr
 friend std::istream& operator>>(std::istream& istr, QInt& qi);
@@ -93,24 +88,27 @@ friend std::istream& operator>>(std::istream& istr, QInt& qi);
 //output a QInt qi to the ostream ostr
 friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
 
-//////////////////////////////////////////////////
+friend QInt operator+(int, const QInt& x);
+friend QInt operator-(int, const QInt& x);
+
 // Hiếu
+void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
 
 friend QInt operator+(const QInt &x, const QInt &y);
 friend QInt operator-(const QInt &x, const QInt &y);
-friend QInt operator*(const QInt &x, const QInt &y);	// thuật toán Booth?
-friend QInt operator/(const QInt &x, const QInt &y);	// KHÓ
+friend QInt operator*(const QInt &x, const QInt &y);
+friend QInt operator/(const QInt &x, const QInt &y);
 
 //++, --, (int)-QInt, (int)+QInt
 
 friend bool operator==(const QInt &x, const QInt &y);
 friend bool operator!=(const QInt &x, const QInt &y);
-friend bool operator<(const QInt &x, const QInt &y);	// chạy từ most significant bit tới
+friend bool operator<(const QInt &x, const QInt &y);	
 friend bool operator>(const QInt &x, const QInt &y);
 friend bool operator<=(const QInt &x, const QInt &y);
 friend bool operator>=(const QInt &x, const QInt &y);
 
-//////////////////////////////////////////////////
 // Tiến
 
 friend QInt operator&(const QInt &x, const QInt &y);
