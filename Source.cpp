@@ -11,6 +11,7 @@ void processQfloat(std::string& sinput, std::string& soutput);
 
 int main(int argc, char* argv[])
 {
+
 	string input = argv[1];
 	string output = argv[2];
 	string stype = argv[3];
@@ -24,7 +25,13 @@ int main(int argc, char* argv[])
 	{
 		processQfloat(input, output);
 	}
-	
+
+	QInt a("110111010000111011");
+	cout << a.DectoBin() << endl;
+	QInt b = rol(a, 2);
+	cout << b << endl;
+	cout << (rol(a, 2)).DectoBin() << endl;
+
 	cout << "Done! Cheer!" << endl;
 	return 0;
 }
@@ -44,6 +51,7 @@ void processQInt(std::string& sinput, std::string& soutput)
 	{
 		output << lineparseQInt(line);
 	}
+	int i = 0;
 	//process every line after
 	while (!input.eof())
 	{
