@@ -810,7 +810,7 @@ QInt rol(const QInt & x, int k)	// cài đặt bên trong là xoay phải
 		ans.setBit(i, x.getBit(QInt::NUMBITS + i - k));
 	for (int i = k; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(i - k));
-	return QInt();
+	return ans;
 }
 
 QInt ror(const QInt & x, int k)	// cài đặt bên trong là xoay trái
@@ -823,7 +823,7 @@ QInt ror(const QInt & x, int k)	// cài đặt bên trong là xoay trái
 		ans.setBit(i, x.getBit(i + k));
 	for (int i = QInt::NUMBITS - k; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(i + k - QInt::NUMBITS));
-	return QInt();
+	return ans;
 }
 
 
