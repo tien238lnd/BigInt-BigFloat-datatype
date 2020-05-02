@@ -483,16 +483,16 @@ QInt operator*(const QInt& x, const QInt& y) {
 
 	QInt kq = y;
 	// mask dong vai tro nhu M trong thuat toan
-	QInt mask = x;
+	QInt M = x;
 	bool q_1 = 0; // dong vai tro q-1 
 	// dung de xet dau q1, xetdauq2
 	bool dauq1 = x.getBit(127);
 	bool dauq2 = y.getBit(127);
-
 	// so bit cua multifier sau khi chuan hoa
 	unsigned int count = 0;
 	// so bit cua multican sau khi chuan hoa
 	unsigned int count2 = 0;
+	QInt A;
 
 	//chuan hoa so kq (boi vi dang truoc co the toan la so 1 hoac 0)
 	for (int i = 127; i >= 0; i--)
@@ -512,42 +512,43 @@ QInt operator*(const QInt& x, const QInt& y) {
 		}
 	}
 
-	//chuan hoa so bi nhan (boi vi dang truoc co the toan la so 1 hoac 0)
+	//Dem xem so bi nhan gom bao nhieu pt
 	for (int i = 127; i >= 0; i--)
 	{
-		bool a = mask.getBit(i);
-		bool b = mask.getBit(i - 1);
-		if (a == b)
+		bool a = M.getBit(i);
+		bool b = M.getBit(i - 1);
+		if (a != b)
 		{
-			if (a)
-			{
-				mask.setBit(i, 0);
-			}
-		}
-		else {
 			count2 = i + 1;
 			break;
 		}
 	}
-	// mask co dang multilican00000 (khuc sau co so 0 bang so bits multifier)
-	mask = mask << count;
 
 	for (int i = 0; i < count; i++)
 	{
 		if (q_1 == 0 && kq.getBit(0) == 1) {
-			kq.Trutrongkhoang(kq, mask, count, count + count2 - 1);
+			A.Trutrongkhoang(A, M, 0, count2 -1);
 		}
 		else if (q_1 == 1 && kq.getBit(0) == 0)
 		{
-			kq.Congtrongkhoang(kq, mask, count, count + count2 - 1);
+			A.Congtrongkhoang(A, M, 0, count2 - 1);
 		}
+
 		q_1 = kq.getBit(0);
-		//temp de luu bit dau cua kq
-		bool temp = kq.getBit(count + count2 - 1);
 		kq = kq >> 1;
-		kq.setBit(count + count2 - 1, temp);
+		kq.setBit(count - 1,A.getBit(0));
+		//temp de luu bit dau cua A
+		bool temp = A.getBit(count2 - 1);
+		A = A >> 1;
+		A.setBit(count2 - 1, temp);
 	}
 
+	for (int i =  0 ; i <= count2 - 1 ; i++)
+	{
+		kq.setBit(i+ count, A.getBit(i));
+	}
+
+	// tien hanh set lai ket qua
 	// luc nay ket qua van co the sai, vi can phai dien bit trong vao truoc do nua
 	// Neu nhu 2 so khac dau thi dien bit 1 vao truoc do
 	if (dauq1 != dauq2) {
@@ -556,8 +557,8 @@ QInt operator*(const QInt& x, const QInt& y) {
 			kq.setBit(i, 1);
 		}
 	}
-	return kq;
 
+	return kq;
 }
 
 QInt operator/(const QInt& x, const QInt& y) {
