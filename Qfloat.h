@@ -1,10 +1,13 @@
+#pragma once
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "DecString.h"
+
 class Qfloat{
-    char bytes[16];
-    
-public:
-    
-    Qfloat();
-    // ~Qfloat();
+	static const int NUMBYTES = 16;
+	static const int NUMBITS = 128;
+    char bytes[NUMBYTES];
 
 private:
 	//set the bit at position i the value b
@@ -15,19 +18,27 @@ private:
 	//get the value of the bit at position i
 	bool getBit(char i) const;
 
-	//convert to 2's complement of this number
-	// void convertTo2sComplement();
+	// use for output in decimal representation
+	std::string toDecString() const;
 
+	// use for output in binary representation
+
+
+
+	void fromDecString(std::string src);
+
+	void fromBinString(std::string src);	// easy
 public:
-    // yeye
-    // Tien
+	std::string toBinString() const;	// easy
 	//default constructor, value is Zero
 	Qfloat();
 
 	//Copy constructor
-	Qfloat(const QInt& src);
+	Qfloat(const Qfloat& src);
 
-	//constructor with string
+	//constructor with string in decimal or binary
+	//in decimal, you can represent it like 100.001 or 6.022e23, -1.602e-19 (must be in normalized form)
+	//in binary, it must have "0b" in the front
 	Qfloat(std::string src);
 
 	//constructor with const char*
@@ -36,27 +47,17 @@ public:
 	//assign operator
 	Qfloat& operator=(const Qfloat& src);
 
-	//assign operator, to a value descript by a string
-	//operator accept value in both decimal
-	//for negative decimal: have "-" sign in the front
-	//for binary: srcStr have "0b" in the front
 	Qfloat& operator=(std::string srcStr);
 
-	//assign operator, to a value descript by a const char
-	//operator accept value in both decimal
-	//for negative decimal: have "-" sign in the front
-	//for binary: srcStr have "0b" in the front
 	Qfloat& operator=(const char* srcStr);
 
     //input a Qfloat qi from istream istr
-    friend std::istream& operator>>(std::istream& istr, Qfloat& qi);
+    friend std::istream& operator>>(std::istream& istr, Qfloat& qf);
 
     //output a Qfloat qi to the ostream ostr
-    friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qi);
+    friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf);
 
 // ----------------------------------------------------------
-
-    // hieu
 
     friend Qfloat operator+(const Qfloat &x, const Qfloat &y);
     friend Qfloat operator-(const Qfloat &x, const Qfloat &y);
