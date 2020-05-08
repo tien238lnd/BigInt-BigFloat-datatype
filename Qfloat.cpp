@@ -1,4 +1,6 @@
-﻿#include "Qfloat.h"
+﻿#pragma once
+#include "Qfloat.h"
+#include "QInt.h"
 
 Qfloat _0 = "0b0";
 Qfloat _1 = "0b0011111111111111";
@@ -203,17 +205,6 @@ void Qfloat::fromDecString(std::string src)
 
 }
 
-// Copy so mu tu Qfloat X sang Qint Y neu flag =1
-// Copy so mu tu Qint Y sang Qfloat X neu flag = 0
-void CopyMu(Qfloat& x, QInt& y, bool flag ){
-	if(flag == 1){
-		for(int i = 126; i >= 112 ; i--){
-
-		}
-	}else{
-
-	}
-}
 
 bool Kiemtramubang0(const Qfloat& x){
 	for(int i = 126; i>=112;i-- ){
@@ -229,7 +220,7 @@ bool Kiemtrabang0(const Qfloat& x){
 	return true;
 }
 
-Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
+Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 
 	if(Kiemtrabang0(x)){
 		return y;
@@ -243,6 +234,7 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 	QInt Mukq;
 	Qfloat F;
 	QInt mot("1");
+	QInt khong("0");
 	bool WeAreAdding2Denormalize = true;
 
 	if(Kiemtramubang0(x)==false){
@@ -292,14 +284,23 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 		if(compareEXY > 0){ /*Neu nhu mu x > mu y thi tang mu y */
 			second = second >> compareEXY;
 			// Chon mu X de lam mukq
-			CopyMu(x,Mukq,1);			
+			for (int i = 126; i >= 112; i--)
+			{
+				Mukq.setBit(i, x.getBit(i));
+			}
 
 		}else{
 			first = first >> abs(compareEXY);  /*Neu nhu mu y > mu x thi tang mu x */
 			// Chon mu Y de lam mukq
-			CopyMu(y,Mukq,1);	
+			for (int i = 126; i >= 112; i--)
+			{
+				Mukq.setBit(i, y.getBit(i));
+			}
 		}
 	}
+
+
+
 
 
 	bool dau1 = first.getBit(127);
@@ -308,7 +309,7 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 	// Neu nhu 2 so cung dau
 	if(dau1 == dau2){
 
-		QInt::Congtrongkhoang(first, second, 113,0);
+		QInt::Congtrongkhoang(first, second, 0,113);
 		I = first;
 
 	}else{ // Neu 2 so khac dau thi lay so lon tru so be roi lay dau cua so lon
@@ -332,13 +333,13 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 		// neu significand first > significand second
 		if(sosanh == 1){
 
-			QInt::Trutrongkhoang(first,second,113,0);
+			QInt::Trutrongkhoang(first,second,0,113);
 			 F.setBit(127, x.getBit(127)); // set dau , lay dau la dau cua So dau
 			 I = first;
 
 		}else if(sosanh == -1){ 
 
-			QInt::Trutrongkhoang(second, first, 113,0);
+			QInt::Trutrongkhoang(second, first, 0,113);
 			 F.setBit(127, y.getBit(127)); // set dau , lay dau la dau cua so thu 2
 			 I = second;
 
@@ -348,6 +349,11 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 	
 	}
 
+	//std::cout << first.DectoBin() << std::endl;
+	//std::cout << second.DectoBin() << std::endl;
+	//std::cout << F.toBinString() << std::endl;
+	//std::cout << Mukq.DectoBin() << std::endl;
+	//std::cout << I.DectoBin() << std::endl;
 	// Xem thu la co can phai tang mu len khong, thuong la tang mu len se gap hien tuong truncation
 	if( I.getBit(113) == 1 && WeAreAdding2Denormalize == false){
 		// tang so mu cua 2 so len 1
@@ -355,7 +361,7 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 		I = I >> 1;	
 	}else if( I.getBit(112) == 1 && WeAreAdding2Denormalize == true ){
 		Mukq = Mukq + mot;
-	}else if(I.getBit(112) == 1 && WeAreAdding2Denormalize == false ){
+	}else if(I.getBit(112) == 0 && WeAreAdding2Denormalize == false ){
 		
 		int sobitcandich2 = 0;
 		
@@ -369,14 +375,14 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 		// Giam so mu va tang phan significand
 		for(int i = 0; i <= sobitcandich2 ; i++){
 			Mukq = Mukq - mot;
-			if(Mukq == 0){
+			if(Mukq == khong){
 				break;
 			}else{
 				I = I << 1;
 			}
 		}
 	}
-
+	std::cout << I.DectoBin() << std::endl;
 	/* 
 	if(I.getBit(112) == 0){
 
@@ -403,7 +409,12 @@ Qfloat operator+ ( Qfloat& x,  Qfloat& y)  {
 	// set mu vao trong F
 	// Neu nhu no la so Denormalize thi set no la 0 
 	for(int i = 126; i >= 112 ; i--){
-		F.setBit(i,0);
+		if (WeAreAdding2Denormalize) {
+			F.setBit(i, 0);
+		}
+		else {
+			F.setBit(i, Mukq.getBit(i));
+		}
 	}
 
 	return F;

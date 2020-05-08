@@ -39,7 +39,7 @@ void processQfloat(std::string& sinput, std::string& soutput);
 
 int main()
 {
-	cout << QInt::QInt_MIN() << endl << QInt::QInt_MIN().DectoBin() << endl;
+	//cout << QInt::QInt_MIN() << endl << QInt::QInt_MIN().DectoBin() << endl;
 
 	/*QInt x = "0b11000101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000";
 	QInt y = x << 2;
@@ -47,6 +47,16 @@ int main()
 	cout << y << endl << y.DectoBin() << endl;
 	QInt z = y >> 2;
 	cout << z << endl << z.DectoBin() << endl;*/
+	Qfloat q1;// 1.25
+	q1.fromBinString("00111111111111110100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+	cout << q1.toBinString() << endl;
+	Qfloat q2; // 2.5
+	q2.fromBinString("01000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+	cout << q2.toBinString() << endl;
+	Qfloat q = q1 + q2;
+	cout << q.toBinString();
+
+	return 0;
 
 }
 

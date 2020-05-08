@@ -5,13 +5,13 @@
 #include "DecString.h"
 
 class Qfloat{
-	//static const int NUMBYTES = 16;
-	//static const int NUMBITS = 128;
+	static const int NUMBYTES = 16;
+	static const int NUMBITS = 128;
     char bytes[128];	//		1/15/112
 
 	//static const Qfloat pINF("0b0111111111111111");
 	//static const Qfloat nINF("0b1111111111111111");
-private:
+public:
 	//set the bit at position i the value b
 	void setBit(char i, bool b);
 
@@ -60,7 +60,7 @@ public:
 // ----------------------------------------------------------
     void addexponent(int numadd);
 
-    friend Qfloat operator+( Qfloat &x,  Qfloat &y) ;
+    friend Qfloat operator+(const Qfloat &x, const Qfloat &y) ;
     friend Qfloat operator-(const Qfloat &x, const Qfloat &y);
     friend Qfloat operator*(const Qfloat &x, const Qfloat &y);
     friend Qfloat operator/(const Qfloat &x, const Qfloat &y);

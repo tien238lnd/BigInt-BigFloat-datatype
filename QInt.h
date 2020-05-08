@@ -47,7 +47,7 @@ public:
 	//cast QInt to int
 	int castToInt();
 	
-private:
+public:
 	//set the bit at position i the value b
 	//i=0 associate with LSB
 	//i=127 associate with MSB
@@ -102,16 +102,12 @@ public:
 
 
 //input a QInt qi from istream istr
- std::istream& operator>>(std::istream& istr, QInt& qi);
+ friend std::istream& operator>> (std::istream& istr, QInt& qi);
 
 //output a QInt qi to the ostream ostr
- std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
+ friend std::ostream& operator<< (std::ostream& ostr,  QInt& qi);
 
 
-//friend QInt operator+(int, const QInt& x);
-//friend QInt operator-(int, const QInt& x);
-
-// Hiếu
  static void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
  static void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
 
