@@ -5,14 +5,14 @@
 #include "DecString.h"
 
 class Qfloat{
-	static const int NUMBYTES = 16;
-	static const int NUMBITS = 128;
-    char bytes[NUMBYTES];
+	//static const int NUMBYTES = 16;
+	//static const int NUMBITS = 128;
+    char bytes[128];	//		1/15/112
 
+	//static const Qfloat pINF("0b0111111111111111");
+	//static const Qfloat nINF("0b1111111111111111");
 private:
 	//set the bit at position i the value b
-	//i=0 associate with LSB
-	//i=127 associate with MSB
 	void setBit(char i, bool b);
 
 	//get the value of the bit at position i

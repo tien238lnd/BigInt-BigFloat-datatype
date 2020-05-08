@@ -1,10 +1,10 @@
 ﻿#include "QInt.h"
 
-
 QInt::QInt()
 {
 	memset(bytes, 0, QInt::NUMBYTES);
 }
+
 QInt::QInt(const QInt& src)
 {
 	for (int i = 0; i < QInt::NUMBITS; i++)
@@ -794,7 +794,8 @@ QInt operator<<(const QInt & x, int k)	// cài đặt bên trong là >> - right 
 	if (k == 0)
 		return x;
 	QInt ans;
-	for (int i = QInt::NUMBITS - 1; i >= k; i--)
+	ans.setBit(QInt::NUMBITS - 1, x.getBit(QInt::NUMBITS - 1));
+	for (int i = QInt::NUMBITS - 2; i >= k; i--)
 		ans.setBit(i, x.getBit(i - k));
 	for (int i = k - 1; i >= 0; i--)
 		ans.setBit(i, 0);
