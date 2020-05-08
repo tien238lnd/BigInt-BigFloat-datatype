@@ -48,25 +48,6 @@ int CompareExponent(const Qfloat& x,const Qfloat& y){
 	return 0;
 }
 
-// Tang Mu cua Qfloat them n lan 
-void TangMu(Qfloat& qf, int n){
-
-	for(int j = 1; j<= n; j++){
-		
-		bool nho = 1;
-
-		for(int i = 112 ; i<=126; i++){
-			short int a = qf.getBit(i) ;
-			if (a + nho == 2) {
-				qf.setBit(i, 0);
-				nho = 1;
-			}
-			else
-			{
-				qf.setBit(i, a + nho);
-				nho = 0;
-			}
-		}
 
 std::string Qfloat::toDecString() const
 {

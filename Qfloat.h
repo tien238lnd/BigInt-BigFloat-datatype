@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#include <iostream>
-#include "QInt.h";
-class Qfloat{
-    char bytes[16];
-
-
-public:
-=======
 #pragma once
 #include <iostream>
 #include <fstream>
@@ -21,7 +12,6 @@ class Qfloat{
 	//static const Qfloat pINF("0b0111111111111111");
 	//static const Qfloat nINF("0b1111111111111111");
 private:
->>>>>>> 8fcb0df2ff937b7c53c825a037fd4e3d93e27286
 	//set the bit at position i the value b
 	void setBit(char i, bool b);
 
