@@ -47,15 +47,17 @@ public:
 	//cast QInt to int
 	int castToInt();
 	
-private:
+
+public:
 	//set the bit at position i the value b
 	//i=0 associate with LSB
 	//i=127 associate with MSB
 	void setBit(char i, bool b);
 
 	//get the value of the bit at position i
-	bool getBit(char i) const;
+	 bool getBit(char i) const;
 
+private:
 	//convert to 2's complement of this number
 	void convertTo2sComplement();
 
@@ -90,18 +92,18 @@ public:
 
 
 //input a QInt qi from istream istr
-friend std::istream& operator>>(std::istream& istr, QInt& qi);
+ std::istream& operator>>(std::istream& istr, QInt& qi);
 
 //output a QInt qi to the ostream ostr
-friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
+ std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
 
 
 //friend QInt operator+(int, const QInt& x);
 //friend QInt operator-(int, const QInt& x);
 
 // Hiếu
-void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
-void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+ static void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+ static void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
 
 friend QInt operator+(const QInt &x, const QInt &y);
 friend QInt operator-(const QInt &x, const QInt &y);

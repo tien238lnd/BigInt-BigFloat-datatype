@@ -1,12 +1,10 @@
+#include <iostream>
+#include "QInt.h";
 class Qfloat{
     char bytes[16];
-    
-public:
-    
-    Qfloat();
-    // ~Qfloat();
 
-private:
+
+public:
 	//set the bit at position i the value b
 	//i=0 associate with LSB
 	//i=127 associate with MSB
@@ -58,7 +56,7 @@ public:
 
     // hieu
 
-    friend Qfloat operator+(const Qfloat &x, const Qfloat &y);
+    friend Qfloat operator+( Qfloat &x,  Qfloat &y) ;
     friend Qfloat operator-(const Qfloat &x, const Qfloat &y);
     friend Qfloat operator*(const Qfloat &x, const Qfloat &y);
     friend Qfloat operator/(const Qfloat &x, const Qfloat &y);
