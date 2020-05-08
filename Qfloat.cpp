@@ -258,6 +258,40 @@ std::ostream & operator<<(std::ostream & ostr, const Qfloat & qf)
 	return ostr;
 }
 
+void Qfloat::addexponent(int exp)
+{
+	char* thisexp = &(this->bytes[Qfloat::NUMBYTES - 2]);
+	char remember = 0;
+	int und = Qfloat::NUMBYTES - 16;
+	for (int i = 0; i < 15; i++)
+	{
+		//get bit;
+		char bitiexp = (exp >> i) & 1;
+		char bitithis = getBit(und + i);
+
+		//delete bit
+		exp &= ~(1 << i);
+
+		//set bit
+		setBit(und + i, (remember + bitiexp + bitithis) % 2);
+		remember = (remember + bitiexp + bitithis) / 2;
+	}
+
+	if (remember == 1 || exp != 0)//overflow exponent
+	{
+		for (int i = 0; i < 15; i++)
+		{
+			setBit(und + i, 1);
+		}
+
+		//not enough, the significant also must set to all zero ->infinity
+		for (int i = 0; i < und; i++)
+		{
+			setBit(i, 0);
+		}
+	}
+}
+
 Qfloat operator+(const Qfloat & x, const Qfloat & y)
 {
 	return Qfloat();
