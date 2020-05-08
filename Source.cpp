@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <string>
 #include "QInt.h"
+#include "Qfloat.h"
 using namespace std;
 
 std::string lineparseQInt(std::string line);
@@ -9,31 +10,44 @@ QInt calculate(QInt& operand1, QInt& operand2, string& operatoro);
 void processQInt(std::string& sinput, std::string& soutput);
 void processQfloat(std::string& sinput, std::string& soutput);
 
-int main(int argc, char* argv[])
+//int main(int argc, char* argv[])
+//{
+//
+//	string input = argv[1];
+//	string output = argv[2];
+//	string stype = argv[3];
+//	int type = stoi(stype);
+//
+//	if (type == 1)
+//	{
+//		processQInt(input, output);
+//	}
+//	else
+//	{
+//		processQfloat(input, output);
+//	}
+//
+//	QInt a("110111010000111011");
+//	cout << a.DectoBin() << endl;
+//	QInt b = rol(a, 2);
+//	cout << b << endl;
+//	cout << (rol(a, 2)).DectoBin() << endl;
+//
+//	cout << "Done! Cheer!" << endl;
+//	return 0;
+//}
+
+int main()
 {
+	cout << QInt::QInt_MIN() << endl << QInt::QInt_MIN().DectoBin() << endl;
 
-	string input = argv[1];
-	string output = argv[2];
-	string stype = argv[3];
-	int type = stoi(stype);
+	/*QInt x = "0b11000101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000";
+	QInt y = x << 2;
+	cout << x << endl << x.DectoBin() << endl;
+	cout << y << endl << y.DectoBin() << endl;
+	QInt z = y >> 2;
+	cout << z << endl << z.DectoBin() << endl;*/
 
-	if (type == 1)
-	{
-		processQInt(input, output);
-	}
-	else
-	{
-		processQfloat(input, output);
-	}
-
-	QInt a("110111010000111011");
-	cout << a.DectoBin() << endl;
-	QInt b = rol(a, 2);
-	cout << b << endl;
-	cout << (rol(a, 2)).DectoBin() << endl;
-
-	cout << "Done! Cheer!" << endl;
-	return 0;
 }
 
 void processQInt(std::string& sinput, std::string& soutput)
