@@ -58,6 +58,7 @@ public:
     friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf);
 
 // ----------------------------------------------------------
+    void addexponent(int numadd);
 
     friend Qfloat operator+(const Qfloat &x, const Qfloat &y);
     friend Qfloat operator-(const Qfloat &x, const Qfloat &y);
