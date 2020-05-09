@@ -310,8 +310,8 @@ void QInt::DecStringToDec(std::string inDecStr)
 	{
 		inDecStr.erase(0, 1);
 	}
-	//convert
-	DecString decsrc = DecString(inDecStr);
+	//convert first method
+	/*DecString decsrc = DecString(inDecStr);
 
 	int i = 0;
 	bool valuezone = true;
@@ -327,6 +327,22 @@ void QInt::DecStringToDec(std::string inDecStr)
 			this->setBit(i, 0);
 		}
 		i++;
+	}*/
+
+	//convert second method, use bcd
+	for (int i = 0; i < QInt::NUMBITS; i++)
+	{
+		this->setBit(i, 0);
+	}
+
+	QInt base_2[11] = { "0b0000", "0b0001","0b0010","0b0011","0b0100","0b0101","0b0110","0b0111","0b1000","0b1001", "0b1010" };
+	QInt b("0b1");
+
+
+	for (int i = inDecStr.length() - 1; i >= 0; i--)
+	{
+		*this = *this + b * base_2[inDecStr[i] - '0'];
+		b = b * base_2[10];
 	}
 
 	//
