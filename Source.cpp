@@ -39,23 +39,116 @@ void processQfloat(std::string& sinput, std::string& soutput);
 
 int main()
 {
-	//cout << QInt::QInt_MIN() << endl << QInt::QInt_MIN().DectoBin() << endl;
+	//// Test 1
+	//Qfloat x = "0b0100000000000101111011"; // 1.111011e6 => 1111011 => 123
+	//cout << x.toBinString() << endl;
+	//Qfloat y = "0b00111111111111101";	// 1.1e-1  => 0.11 => 0.75
+	//cout << y.toBinString() << endl;
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//Qfloat z = x + y;	// 123.75 => 1111011.11 => 1.11101111e6 => 010000000000010 11101111
+	//cout << z.toBinString();
 
-	/*QInt x = "0b11000101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000";
-	QInt y = x << 2;
-	cout << x << endl << x.DectoBin() << endl;
-	cout << y << endl << y.DectoBin() << endl;
-	QInt z = y >> 2;
-	cout << z << endl << z.DectoBin() << endl;*/
-	Qfloat q1;// 1.25
-	q1.fromBinString("00111111111111110100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-	cout << q1.toBinString() << endl;
-	Qfloat q2; // 2.5
-	q2.fromBinString("01000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-	cout << q2.toBinString() << endl;
-	Qfloat q = q1 + q2;
-	cout << q.toBinString();
+	// Test 2
+	//Qfloat x = "0b1100000000000000101"; // -1.101e-1 => -3.25
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b0100000000000001101";	// 1.101e2  => 6.5
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 0 1000...0 101
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
 
+	 // Test 3
+	//Qfloat x = "0b11000000000001100001001001"; // -1.0001001001e7 => -137.425
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b1100000000000000101011";	// -1.101011e1  => -2.34375
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 1 1000...0110 000110001111
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	////// Test 4
+	//Qfloat x = "0b0000000000000000001010111"; // 0.169921875e-16382 , signficand 001010111
+	////cout << x.toBinString() << endl;
+	//Qfloat y  = "0b0000000000000000010111011";	// 0.365234375e-16382  , signficand 010111011
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 100010010
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	//////// Test 5 2 so denormalize cung dau
+	//Qfloat x = "0b1000000000000000001010111"; // 0.169921875e-16382 , signficand 001010111
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b1000000000000000010111011";	// 0.365234375e-16382  , signficand 010111011
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 100010010
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	 // Test 6 2 so doi nhau
+	//Qfloat x = "0b11000000000001100001001001"; // -1.0001001001e7 => -137.425
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b01000000000001100001001001";	// -1.101011e1  => 137.425
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 0
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	// Test 7 , so rat lon voi so rat be 
+	//Qfloat x = "0b110000010010101110"; // -1.1e300 
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b010000000000000001";	// 1.01e1
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 0
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+
+	////////// Test 8 2 so denormalize trai dau
+	//Qfloat x = "0b1000000000000000010111"; // -0.359375e-16382 , signficand 001010111
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b000000000000000001011001011";	// 0.3491210938e-16382  , signficand 010111011
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 10101
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	// Test 9 2 so normal cung dau, tuy nhienn sau khi cong thi phai thay doi mux
+	//Qfloat x = "0b0100000000000010011111"; // 1.011111e3 
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b010000000000000111101";	//1.11101e2 
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 1.00111e4
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	//// Test 10 2 so denormal cung dau, tuy nhienn sau khi cong thi phai thay doi mux -> ket qua la normal
+	//Qfloat x = "0b1000000000000000111110111"; // 0.169921875e-16382 , signficand 111110111
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b1000000000000000110111011";	// 0.365234375e-16382  , signficand 110111011
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 1.11011 e4
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	// Test 11 2 so normal trai dau, tuy nhienn sau khi cong thi phai thay doi mux , cu the la phai giam mu 
+	//Qfloat x = "0b01000000000000010111001"; // 1.0111001 e2 , signficand 111110111
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b1100000000000001011111";	// -1.011111e2  , signficand 110111011
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 
+	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+
+	// Test 12 so dac biet
+	Qfloat x = "0b0111111111111111101100"; // infini
+	//cout << x.toBinString() << endl;
+	Qfloat y = "0b0111111111111111101100";	// infini
+	//cout << y.toBinString() << endl;
+	Qfloat z = x + y;	// 
+	std::cout << "7654321|987654321|987654321|987654321|98765	4321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << z.toBinString();
+	
+			
 	return 0;
 
 }
