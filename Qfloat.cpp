@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Qfloat.h"
 #include "QInt.h"
-#include "math.h"
 
 Qfloat _0 = "0b0";
 Qfloat _1 = "0b0011111111111111";
@@ -38,6 +37,7 @@ void Qfloat::setBit(char i, bool b)
 int CompareExponent(const Qfloat& x,const Qfloat& y){
 	
 	int ans = 0;
+	int pow2x = 1;
 	
 	bool nho = 0;
 	for (int i = 112; i <= 126; i++)
@@ -45,19 +45,20 @@ int CompareExponent(const Qfloat& x,const Qfloat& y){
 		bool a = x.getBit(i);
 		bool b = y.getBit(i);
 		if (a - b - nho == -1) {
-			ans = ans + pow(2, i - 112);
+			ans = ans + pow2x;
 			nho = 1;
 		}
 		else if (a - b - nho < -1) {
 			nho = 1;
 		}
 		else {
-			ans = ans + pow(2, i - 112) * (a - b - nho);
+			ans = ans + pow2x * (a - b - nho);
 			nho = 0;
 		}
+		pow2x = pow2x * 2;
 	}
 
-	ans += -1*nho*pow(2,15);
+	ans += -1*nho*pow2x;
 
 	return ans;
 }
