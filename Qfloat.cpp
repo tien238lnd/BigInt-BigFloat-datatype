@@ -524,11 +524,6 @@ std::ostream & operator<<(std::ostream & ostr, const Qfloat & qf)
 	return ostr;
 }
 
-Qfloat operator-(const Qfloat & x, const Qfloat & y)
-{
-	return Qfloat();
-}
-
 Qfloat operator*(const Qfloat& x, const Qfloat& y)
 {
 	Qfloat opr1 = x;
