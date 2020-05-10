@@ -2,12 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "DecString.h"
+#include "QInt.h"
 
-class Qfloat{
+class Qfloat {
 	static const int NUMBYTES = 16;
 	static const int NUMBITS = 128;
-    char bytes[128];	//		1/15/112
+	static const int BIAS = 16383;
+	char bytes[NUMBYTES];	//		1/15/112
 
 	static Qfloat pINF()
 	{
@@ -63,19 +64,18 @@ public:
 
 	Qfloat& operator=(const char* srcStr);
 
-    //input a Qfloat qi from istream istr
-    friend std::istream& operator>>(std::istream& istr, Qfloat& qf);
+	//input a Qfloat qi from istream istr
+	friend std::istream& operator>>(std::istream& istr, Qfloat& qf);
 
-    //output a Qfloat qi to the ostream ostr
-    friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf);
+	//output a Qfloat qi to the ostream ostr
+	friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf);
 
-// ----------------------------------------------------------
-    void addexponent(int numadd);
+	// ----------------------------------------------------------
 
-    friend Qfloat operator+(const Qfloat &x, const Qfloat &y) ;
-    friend Qfloat operator-(const Qfloat &x, const Qfloat &y);
-    friend Qfloat operator*(const Qfloat &x, const Qfloat &y);
-    friend Qfloat operator/(const Qfloat &x, const Qfloat &y);
+	friend Qfloat operator+(const Qfloat& x, const Qfloat& y);
+	friend Qfloat operator-(const Qfloat& x, const Qfloat& y);
+	friend Qfloat operator*(const Qfloat& x, const Qfloat& y);
+	friend Qfloat operator/(const Qfloat& x, const Qfloat& y);
 
 
 

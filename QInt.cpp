@@ -561,7 +561,9 @@ QInt operator*(const QInt& x, const QInt& y) {
 
 	for (int i =  0 ; i <= count2 - 1 ; i++)
 	{
-		kq.setBit(i+ count, A.getBit(i));
+		if ((i + count) < 128) {
+			kq.setBit(i + count, A.getBit(i));
+		}
 	}
 
 	// tien hanh set lai ket qua
