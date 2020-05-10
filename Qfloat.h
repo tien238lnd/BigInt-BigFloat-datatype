@@ -10,18 +10,7 @@ class Qfloat {
 	static const int BIAS = 16383;
 	char bytes[NUMBYTES];	//		1/15/112
 
-	static Qfloat pINF()
-	{
-		return Qfloat("0b0111111111111111");
-	}
-	static Qfloat nINF()
-	{
-		return Qfloat("0b1111111111111111");
-	}
-	static Qfloat NaN()
-	{
-		return Qfloat("0b0111111111111111111");
-	}
+
 public:
 	//set the bit at position i the value b
 	void setBit(char i, bool b);

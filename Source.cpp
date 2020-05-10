@@ -39,6 +39,8 @@ void processQfloat(std::string& sinput, std::string& soutput);
 
 int main()
 {
+	Qfloat x = "34";
+	cout << x;
 	/*double a = 9876543e301;
 	double b = 10;
 	double c = a*b;
@@ -53,10 +55,10 @@ int main()
 	cout << "c - 9a = " << c - 9*a << endl;
 	cout << "d = " << d << endl;
 	cout << "c + d = " << c + d << endl;*/
-	Qfloat x = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	/*Qfloat x = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 	Qfloat i, f;
 	x.modf(i, f);
-	cout << x.toBinString() << '\n' << i.toBinString() << '\n' << f.toBinString() << '\n';
+	cout << x.toBinString() << '\n' << i.toBinString() << '\n' << f.toBinString() << '\n';*/
 	//cout << QInt::QInt_MIN() << endl << QInt::QInt_MIN().DectoBin() << endl;
 
 	/*QInt x = "0b11000101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000";
@@ -176,15 +178,15 @@ int main()
 	//cout << z.toBinString();
 
 	// Test 12 so dac biet
-	Qfloat x = "0b0111111111111111101100"; // infini
-	//cout << x.toBinString() << endl;
-	Qfloat y = "0b0111111111111111101100";	// infini
-	//cout << y.toBinString() << endl;
-	Qfloat z = x + y;	// 
-	std::cout << "7654321|987654321|987654321|987654321|98765	4321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	cout << z.toBinString();
-	
-			
+	//Qfloat x = "0b0111111111111111101100"; // infini
+	////cout << x.toBinString() << endl;
+	//Qfloat y = "0b0111111111111111101100";	// infini
+	////cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 
+	//std::cout << "7654321|987654321|987654321|987654321|98765	4321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	//cout << z.toBinString();
+	//
+	//		
 	return 0;
 
 }
