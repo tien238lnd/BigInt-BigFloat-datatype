@@ -1,6 +1,4 @@
-﻿#pragma once
 #include "Qfloat.h"
-#include "QInt.h"
 
 Qfloat _0 = "0b0";
 Qfloat _1 = "0b0011111111111111";
@@ -24,7 +22,7 @@ void Qfloat::setBit(char i, bool b)
 }
 
 
- bool Qfloat::getBit(char i) const
+bool Qfloat::getBit(char i) const
 {
 	return (this->bytes[i / 8] >> i % 8) & 1;
 }
@@ -34,11 +32,11 @@ void Qfloat::setBit(char i, bool b)
 // so sanh 2 mu cua 2 so Qfloat, tra ve do chech lech 
 // Neu x > y tra ve so duong
 // Neu x < y tra ve so am
-int CompareExponent(const Qfloat& x,const Qfloat& y){
-	
+int CompareExponent(const Qfloat& x, const Qfloat& y) {
+
 	int ans = 0;
 	int pow2x = 1;
-	
+
 	bool nho = 0;
 	for (int i = 112; i <= 126; i++)
 	{
@@ -58,7 +56,7 @@ int CompareExponent(const Qfloat& x,const Qfloat& y){
 		pow2x = pow2x * 2;
 	}
 
-	ans += -1*nho*pow2x;
+	ans += -1 * nho * pow2x;
 
 	return ans;
 }
@@ -78,16 +76,16 @@ std::string Qfloat::toBinString() const
 	return out;
 }
 
-void cut_off_meaningful_digits(std::string &str)
+void cut_off_meaningful_digits(std::string& str)
 {
 	if (str.length() > 33)
 		str.erase(33);
 }
 
-Qfloat calculate_from_integral_part(const std::string &src, int exponent = 0)	// exponent if pass must > 0
+Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	// exponent if pass must > 0
 {
 	Qfloat result;
-	for (int i = 0; i < src.length(); i++)
+	for (int i = 0; i < int(src.length()); i++)
 	{
 		if (src[i] != '0')
 			result = result * _10 + BCD[src[i] - '0'];
@@ -99,7 +97,7 @@ Qfloat calculate_from_integral_part(const std::string &src, int exponent = 0)	//
 	return result;
 }
 
-Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	// // exponent if pass must < 0
+Qfloat calculate_from_fraction_part(const std::string& src, int exponent = 0)	// // exponent if pass must < 0
 {
 	Qfloat result;
 	for (int i = src.length() - 1; i >= 0; i--)
@@ -114,7 +112,7 @@ Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	//
 	return result;
 }
 
-int move_floating_point_based_on_exponent(std::string &str, int &exponent) // exponent >= 0
+int move_floating_point_based_on_exponent(std::string& str, int& exponent) // exponent >= 0
 {
 	// 1.2345e0  --> 1.2345
 	// 1.2345e3  --> 1234.5
@@ -133,7 +131,7 @@ int move_floating_point_based_on_exponent(std::string &str, int &exponent) // ex
 void Qfloat::fromDecString(std::string src)
 {
 	// HARDCORE
-	
+
 	// PREPROCESSING
 	// B1: Sign
 	if (src[0] == '-')
@@ -192,7 +190,7 @@ void Qfloat::fromDecString(std::string src)
 				*this = calculate_from_integral_part(src, exponent);
 				return;
 			}
-										// 2.345e678
+			// 2.345e678
 			int point_locate = move_floating_point_based_on_exponent(src, exponent);
 			if (point_locate == src.length() - 1)
 			{
@@ -219,38 +217,39 @@ void Qfloat::fromDecString(std::string src)
 }
 
 
-bool Kiemtramubang0(const Qfloat& x){
-	for(int i = 126; i>=112;i-- ){
-		if(x.getBit(i)==1){return false;}
+bool Kiemtramubang0(const Qfloat& x) {
+	for (int i = 126; i >= 112; i--) {
+		if (x.getBit(i) == 1) { return false; }
 	}
 	return true;
 }
 
-bool Kiemtrabang0(const Qfloat& x){
-	for(int i = 126; i>=0;i-- ){
-		if(x.getBit(i)==1){return false;}
+bool Kiemtrabang0(const Qfloat& x) {
+	for (int i = 126; i >= 0; i--) {
+		if (x.getBit(i) == 1) { return false; }
 	}
 	return true;
 }
 
-bool IsInfinityOrNaN(const Qfloat& x){
-	for(int i = 126; i>=112;i-- ){
-		if(x.getBit(i)!=1){return false;}
+bool IsInfinityOrNaN(const Qfloat& x) {
+	for (int i = 126; i >= 112; i--) {
+		if (x.getBit(i) != 1) { return false; }
 	}
 	return true;
 }
 
-Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
+Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 
-	if(IsInfinityOrNaN(x)==true || IsInfinityOrNaN(y)== true ){
+	if (IsInfinityOrNaN(x) == true || IsInfinityOrNaN(y) == true) {
 		Qfloat trave;
 		trave.fromBinString("011111111111111111111");
 		return trave;
 	}
 
-	if(Kiemtrabang0(x)){
+	if (Kiemtrabang0(x)) {
 		return y;
-	}else if(Kiemtrabang0(y)){
+	}
+	else if (Kiemtrabang0(y)) {
 		return x;
 	}
 
@@ -259,51 +258,54 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 	bool WeAreAdding2Denormalize = true;
 	bool OverFlowDenormalize = false;
 
-	if(Kiemtramubang0(x)==false){
-		
-		first.setBit(112,1);
+	if (Kiemtramubang0(x) == false) {
+
+		first.setBit(112, 1);
 		WeAreAdding2Denormalize = false;
-
-	}else{
-
-		first.setBit(112,0);
 
 	}
-	
-	if(Kiemtramubang0(y) == false){
+	else {
 
-		second.setBit(112,1);
+		first.setBit(112, 0);
+
+	}
+
+	if (Kiemtramubang0(y) == false) {
+
+		second.setBit(112, 1);
 		WeAreAdding2Denormalize = false;
 
-	}else{
+	}
+	else {
 
 		second.setBit(112, 0);
 
 	}
 
-	for(int i = 0; i<= 111; i++){
+	for (int i = 0; i <= 111; i++) {
 
-		first.setBit(i,x.getBit(i));
-		second.setBit(i,y.getBit(i));
+		first.setBit(i, x.getBit(i));
+		second.setBit(i, y.getBit(i));
 
 	}
 
-	int compareEXY = CompareExponent(x,y);
+	int compareEXY = CompareExponent(x, y);
 
 	// Neu nhu 2 mu khong bang nhau thi can bang lai 2 so mu
-	if (compareEXY != 0 ){
+	if (compareEXY != 0) {
 
 		// Neu nhu su chech lech giua 2 so mu qua lon -> 1 so rat lon + 1 so rat be -> kq la  so rat lon
-		if(compareEXY > 112 ){
+		if (compareEXY > 112) {
 			Qfloat resulf = x;
 			return resulf;
-		}else if(compareEXY < -112 ){
+		}
+		else if (compareEXY < -112) {
 			Qfloat resulf = y;
 			return resulf;
 		}
 
 
-		if(compareEXY > 0){ /*Neu nhu mu x > mu y thi tang mu y */
+		if (compareEXY > 0) { /*Neu nhu mu x > mu y thi tang mu y */
 			second = second >> compareEXY;
 			// Chon mu X de lam mukq
 			for (int i = 126; i >= 112; i--)
@@ -311,7 +313,8 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 				Mukq.setBit(i, x.getBit(i));
 			}
 
-		}else{
+		}
+		else {
 			first = first >> abs(compareEXY);  /*Neu nhu mu y > mu x thi tang mu x */
 			// Chon mu Y de lam mukq
 			for (int i = 126; i >= 112; i--)
@@ -333,20 +336,21 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 	bool dau2 = y.getBit(127);
 
 	// Neu nhu 2 so cung dau thi cu cong vao thoai mai
-	if(dau1 == dau2){
+	if (dau1 == dau2) {
 
-		QInt::Congtrongkhoang(first, second, 0,113);
+		QInt::Congtrongkhoang(first, second, 0, 113);
 		I = first;
 		F.setBit(127, x.getBit(127));
 
-	}else{ // Neu 2 so khac dau thi lay so lon tru so be roi lay dau cua so lon
-	
-		// sosanh 2 so xem so nao lon hon
-		int sosanh = 0 ;
+	}
+	else { // Neu 2 so khac dau thi lay so lon tru so be roi lay dau cua so lon
+
+	   // sosanh 2 so xem so nao lon hon
+		int sosanh = 0;
 		for (int k = 112; k >= 0; k--)
 		{
 			if (first.getBit(k) < second.getBit(k)) {
-				sosanh = -1 ;
+				sosanh = -1;
 				break;
 			}
 
@@ -357,53 +361,58 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 		}
 
 		// neu significand first > significand second
-		if(sosanh == 1){
+		if (sosanh == 1) {
 
-			QInt::Trutrongkhoang(first,second,0,113);
-			 F.setBit(127, x.getBit(127)); // set dau , lay dau la dau cua So dau
-			 I = first;
+			QInt::Trutrongkhoang(first, second, 0, 113);
+			F.setBit(127, x.getBit(127)); // set dau , lay dau la dau cua So dau
+			I = first;
 
-		}else if(sosanh == -1){ 
+		}
+		else if (sosanh == -1) {
 
-			QInt::Trutrongkhoang(second, first, 0,113);
-			 F.setBit(127, y.getBit(127)); // set dau , lay dau la dau cua so thu 2
-			 I = second;
+			QInt::Trutrongkhoang(second, first, 0, 113);
+			F.setBit(127, y.getBit(127)); // set dau , lay dau la dau cua so thu 2
+			I = second;
 
-		}else{ // Cung mu cung significand, tuc la ket qua bang 0
+		}
+		else { // Cung mu cung significand, tuc la ket qua bang 0
 			return F;
 		}
-	
+
 	}
 
 	// Xem thu la co can phai tang mu len khong, thuong la tang mu len se gap hien tuong truncation
-	if( I.getBit(113) == 1 && WeAreAdding2Denormalize == false){
-		
-		// tang so mu cua kq len 1
-		QInt::Congtrongkhoang(Mukq,mot,112,126);
-		I = I >> 1;	
+	if (I.getBit(113) == 1 && WeAreAdding2Denormalize == false) {
 
-	}else if( I.getBit(112) == 1 && WeAreAdding2Denormalize == true ){
-		
+		// tang so mu cua kq len 1
+		QInt::Congtrongkhoang(Mukq, mot, 112, 126);
+		I = I >> 1;
+
+	}
+	else if (I.getBit(112) == 1 && WeAreAdding2Denormalize == true) {
+
 		QInt::Congtrongkhoang(Mukq, mot, 112, 126);
 
-	}else if(I.getBit(112) == 0 && WeAreAdding2Denormalize == false ){
-		
+	}
+	else if (I.getBit(112) == 0 && WeAreAdding2Denormalize == false) {
+
 		// Doi voi cac truong hop 2 so tru cho nhau ma khong con o dang chuan
 		int sobitcandich2 = 0;
-		for(int i = 111; i >= 0 ; i--){
-			if(I.getBit(i)== 1){
-				sobitcandich2 = 112-i;
+		for (int i = 111; i >= 0; i--) {
+			if (I.getBit(i) == 1) {
+				sobitcandich2 = 112 - i;
 				break;
 			}
 		}
 
 		// Giam so mu va tang phan significand
-		for(int i = 1; i <= sobitcandich2 ; i++){
-			
+		for (int i = 1; i <= sobitcandich2; i++) {
+
 			// Neu mu bang 0 thi luc nay phai chuyen sang dang denorrmal
-			if(Mukq == khong){
+			if (Mukq == khong) {
 				break;
-			}else{
+			}
+			else {
 				I = I << 1;
 				QInt::Trutrongkhoang(Mukq, mot, 112, 126);
 			}
@@ -425,12 +434,12 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 
 	// Toi buoc nay roi thi chi can set mu va significand vao lai F
 	// Set Significand
-	for(int i = 111; i >= 0; i--){
-		F.setBit(i,I.getBit(i));
+	for (int i = 111; i >= 0; i--) {
+		F.setBit(i, I.getBit(i));
 	}
-	
+
 	// Set Exponent
-	for(int i = 126; i >= 112 ; i--){
+	for (int i = 126; i >= 112; i--) {
 		F.setBit(i, Mukq.getBit(i));
 	}
 
@@ -438,20 +447,21 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 
 }
 
-Qfloat operator-( const Qfloat& x,  const Qfloat& y){
+Qfloat operator-(const Qfloat& x, const Qfloat& y) {
 	Qfloat second = y;
-	if(y.getBit(127)==0){
-		y.setBit(127,1);
-	}else{
-		y.setBit(127,0);
+	if (y.getBit(127) == 0) {
+		second.setBit(127, 1);
 	}
-	return x + second ;
+	else {
+		second.setBit(127, 0);
+	}
+	return x + second;
 }
 
 void Qfloat::fromBinString(std::string src)
 {
 	int i = 0;
-	for (; i < src.length(); i++)
+	for (; i < int(src.length()); i++)
 	{
 		//set value from input string to our Qfloat
 		this->setBit(127 - i, src[i] - '0');
@@ -468,7 +478,7 @@ Qfloat::Qfloat()
 	memset(bytes, 0, 16);
 }
 
-Qfloat::Qfloat(const Qfloat & src)
+Qfloat::Qfloat(const Qfloat& src)
 {
 	for (int i = 0; i < 128; i++)
 	{
@@ -482,7 +492,7 @@ Qfloat::Qfloat(std::string src)
 	{
 		//delete "0b"
 		src.erase(0, 2);
-		
+
 		this->fromBinString(src);
 	}
 	else
@@ -492,12 +502,12 @@ Qfloat::Qfloat(std::string src)
 }
 
 
-Qfloat::Qfloat(const char * src)
+Qfloat::Qfloat(const char* src)
 {
 	*this = Qfloat(std::string(src));
 }
 
-Qfloat & Qfloat::operator=(const Qfloat & src)
+Qfloat& Qfloat::operator=(const Qfloat& src)
 {
 	for (int i = 0; i < 128; i++)
 	{
@@ -506,20 +516,20 @@ Qfloat & Qfloat::operator=(const Qfloat & src)
 	return *this;
 }
 
-Qfloat & Qfloat::operator=(std::string srcStr)
+Qfloat& Qfloat::operator=(std::string srcStr)
 {
 	*this = Qfloat(srcStr);
 
 	return *this;
 }
 
-Qfloat & Qfloat::operator=(const char * srcStr)
+Qfloat& Qfloat::operator=(const char* srcStr)
 {
 	*this = Qfloat(std::string(srcStr));
 	return *this;
 }
 
-std::ostream & operator<<(std::ostream & ostr, const Qfloat & qf)
+std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf)
 {
 	ostr << qf.toDecString();
 	return ostr;
@@ -537,7 +547,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 	{
 		if (opr1.getBit(i) == 1) { is_0 = false; }
 	}
-	
+
 	if (is_0) { return res; }
 
 	is_0 = true;
@@ -549,7 +559,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 	if (is_0) { return res; }
 
 	res = opr1;
-	res.setBit(Qfloat::NUMBITS-1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));
+	res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));
 	/////
 	//
 	int bias = 16383;
@@ -574,7 +584,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 	{
 		denormalize_gap = 1;
 		//exp1--;
-		while (opr1.getBit(112 - denormalize_gap) == 0) 
+		while (opr1.getBit(112 - denormalize_gap) == 0)
 		{
 			denormalize_gap++;
 			exp1--;
@@ -654,9 +664,9 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 	///overflow
 	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
 	{
-		res.setBit(Qfloat::NUMBITS-1, opr1.getBit(Qfloat::NUMBITS - 1)!=opr2.getBit(Qfloat::NUMBITS - 1));//sign
+		res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));//sign
 
-		for (int i = und; i < Qfloat::NUMBITS-1; i++)
+		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{
 			res.setBit(i, 1);
 		}
@@ -667,7 +677,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 		return res;
 	}
 	//underflow
-	if (exp1 < -(Qfloat::NUMBITS-16))//underflow
+	if (exp1 < -(Qfloat::NUMBITS - 16))//underflow
 	{
 		for (int i = 0; i < Qfloat::NUMBITS; i++)
 		{
@@ -746,7 +756,7 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 		{
 			res.setBit(i, 1);
 		}
-		for (int i = und-3; i < und; i++)
+		for (int i = und - 3; i < und; i++)
 		{
 			res.setBit(i, 1);
 		}
@@ -832,18 +842,18 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 	for (int i = 113; i >= 1; i--)
 	{
 		opr1_vs_opr2 = 1;
-		if (opr1s[i+113] == 0)
+		if (opr1s[i + 113] == 0)
 		{
 			for (int kt = 0; kt < 113; kt++)
 			{
 				opr1_vs_opr2 = opr1s[i + 112 - kt] - opr2s[112 - kt];
-				
+
 				if (opr1_vs_opr2 != 0) { break; }
 			}
 		}
 
 		//if after substract we dont get a negative
-		if (opr1_vs_opr2>=0)
+		if (opr1_vs_opr2 >= 0)
 		{
 			bool remember = 0;
 			//subtract
@@ -853,14 +863,14 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 				opr1s[i + j] = temp + (temp < 0) * 2;
 				remember = temp < 0;
 			}
-			
+
 			oprres[i - 1] = 1;
 		}
 		else//if after substract we get a negative
 		{
 			oprres[i - 1] = 0;
 		}
-		
+
 	}
 
 	//
