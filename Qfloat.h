@@ -9,8 +9,18 @@ class Qfloat{
 	static const int NUMBITS = 128;
     char bytes[128];	//		1/15/112
 
-	//static const Qfloat pINF("0b0111111111111111");
-	//static const Qfloat nINF("0b1111111111111111");
+	static Qfloat pINF()
+	{
+		return Qfloat("0b0111111111111111");
+	}
+	static Qfloat nINF()
+	{
+		return Qfloat("0b1111111111111111");
+	}
+	static Qfloat NaN()
+	{
+		return Qfloat("0b0111111111111111111");
+	}
 public:
 	//set the bit at position i the value b
 	void setBit(char i, bool b);
@@ -23,7 +33,9 @@ public:
 
 	// use for output in binary representation
 
-
+	int get_exponent() const;
+	void modf(Qfloat &integral, Qfloat &fractional) const;
+	char toChar() const;
 
 	void fromDecString(std::string src);
 

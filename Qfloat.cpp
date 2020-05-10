@@ -1,5 +1,4 @@
-﻿#pragma once
-#include "Qfloat.h"
+﻿#include "Qfloat.h"
 #include "QInt.h"
 
 Qfloat _0 = "0b0";
@@ -50,11 +49,233 @@ int CompareExponent(const Qfloat& x,const Qfloat& y){
 	return 0;
 }
 
+int Qfloat::get_exponent() const // of 2, not 10
+{
+	std::string exp_str;
+	for (int i = 126; i > 111; i--)
+		exp_str += (this->getBit(i) + '0');
+	return std::stoi(exp_str, 0, 2) - 16383;
+	/*int x = 0;
+	for (int i = 126, int j = 0; i > 111; i--, j--)
+	{
+		bool b = this->getBit(i);
+		if (b == 1)
+			x = x & (1 >> j);
+	}
+	return x - 16383;*/
+}
+
+
+
+void Qfloat::modf(Qfloat &integral, Qfloat &fractional) const
+{
+	integral = fractional = _0;
+	int exp = this->get_exponent();
+	if (exp < 0)
+	{
+		integral = _0;
+		fractional = *this;
+	}
+	else if (exp >= 112)
+	{
+		integral = *this;
+		fractional = _0;
+	}
+	else
+	{
+		bool sign = this->getBit(127);
+		integral.setBit(127, sign);
+		fractional.setBit(127, sign);
+		int o = 126;	// index run on the bit-chain of original float
+		// Exponent of integral part is the same as the original
+		for (; o > 111; o--)
+		{
+			integral.setBit(o, this->getBit(o));
+		}
+		// Significant of integral part is first (exp) bits of that in the original 
+		for (; o > 111 - exp; o--)
+		{
+			integral.setBit(o, this->getBit(o));
+		}
+		// Exponent of fraction part is number of bit from (111-exp) to first next bit 1
+		// ko có trường hợp denormalized form chi ở đây hết :>
+		int exp_frac = -1;	// 1 bit default of normalized form
+		while (o >= 0 && this->getBit(o--) == 0)
+		{
+			exp_frac--;
+		}
+		if (this->getBit(o + 1) == 0)
+		{
+			fractional = _0;
+		}
+		else
+		{
+			unsigned exp_frac_bias = exp_frac + 16383;	// bias representation
+			int f = 126;	// index run on the bit-chain of the fractional float
+			for (int i = 14; f > 111; f--, i--)
+			{
+				fractional.setBit(f, (exp_frac_bias >> i & 1));
+			}
+			// Significant of fraction part is from that first bit 1 to end in the original
+			for (; o >= 0; o--, f--)
+			{
+				fractional.setBit(f, this->getBit(o));
+			}
+		}
+	}
+}
+
+bool operator==(const Qfloat &a, const Qfloat &b)
+{
+	for (int i = 0; i < 127; i++)	// operator == don't care about sign bit  
+		if (a.getBit(i) != b.getBit(i))
+			return false;
+	return true;
+}
+
+bool strict_equal(const Qfloat &a, const Qfloat &b)
+{
+	for (int i = 0; i < 128; i++)	// this function care about sign bit  
+		if (a.getBit(i) != b.getBit(i))
+			return false;
+	return true;
+}
+
+bool isNaN(const Qfloat &a)
+{
+	for (int i = 127; i >= 111; i--)
+		if (a.getBit(i) != 1)
+			return false;
+	return true;
+}
+
+bool operator!=(const Qfloat &a, const Qfloat &b)
+{
+	return !(a == b);
+}
+
+char Qfloat::toChar() const
+{
+	for (int i = 0; i < 10; i++)
+		if (*this == BCD[i])
+			return i + '0';
+}
+
+std::string print_from_integral_part(Qfloat &src, int &exponent)
+{
+	// exponent = 0;
+	Qfloat digit_extracted;	// in form of 0.x
+	std::string result;
+	// src is alway integral round
+	// recognize zero chain from point, go left to meet the first meaningful digit
+	while (true)
+	{
+		Qfloat integral_with_1_digit_after_point = src / _10;
+		integral_with_1_digit_after_point.modf(src, digit_extracted);
+		if (digit_extracted == _0)
+			exponent++;
+		else break;
+	}
+	while (true) {
+		digit_extracted = digit_extracted * _10; // 0.3 -> 3
+		result = digit_extracted.toChar() + result;
+		if (src == 0)
+			break;
+		Qfloat integral_with_1_digit_after_point = src / _10;
+		integral_with_1_digit_after_point.modf(src, digit_extracted);
+	}
+}
+
+std::string print_from_fractional_part(Qfloat &src, int &exponent)
+{
+	// exponent = -1;
+	Qfloat digit_extracted;	// in form of x
+	std::string result;
+	// src is alway a fraction less than 1 : 0.xxx...
+	// recognize zero chain from point, go right to meet the first meaningful digit
+	while (true)
+	{
+		Qfloat fractional_with_1_digit_before_point = src * _10;
+		fractional_with_1_digit_before_point.modf(digit_extracted, src);
+		if (digit_extracted == _0)
+			exponent--;
+		else break;
+	}
+	while (true) {
+		result = result + digit_extracted.toChar();
+		if (src == 0)
+			break;
+		Qfloat fractional_with_1_digit_before_point = src * _10;
+		fractional_with_1_digit_before_point.modf(digit_extracted, src);
+	}
+}
 
 std::string Qfloat::toDecString() const
 {
 	// HARDCORE
-	return std::string();
+	if (*this == _0)
+		return "0";
+	if (strict_equal(*this, Qfloat::pINF()))
+		return "+inf";
+	if (strict_equal(*this, Qfloat::nINF()))
+		return "-inf";
+	if (isNaN(*this))
+		return "NaN";
+
+	Qfloat integral, fractional;
+	this->modf(integral, fractional);
+	std::string result;
+	// chia 2 th: e >= 0 và e < 0, dựa vào integral >= 1 hay ko
+	// integral = 1 thì e=0, > 1 thì e > 0, =0 thì e <0
+	if (fractional != 0) // only integral part
+	{
+		int exponent = 0;
+		result = print_from_integral_part(integral, exponent);
+		if (exponent + result.length() > 6)
+		{
+			result.insert(1, ".");
+			result += "e" + std::to_string(exponent + result.length() - 1);
+		}
+		else
+		{
+			while (exponent-- > 0)
+				result += "0";
+		}
+	}
+	else if (integral != 0) // only fractional part
+	{
+		int exponent = -1;
+		result = print_from_fractional_part(fractional, exponent);
+		if (exponent + result.length() > 3)
+		{
+			result.insert(1, ".");
+			result += "e" + std::to_string(exponent);
+		}
+		else
+		{
+			while (exponent++ < 0)
+				result = "0" + result;
+		}
+	}
+	else
+	{
+		int exponent = 0;
+		result = print_from_integral_part(integral, exponent);
+		while (exponent-- > 0)
+			result += "0";
+		int point_locate = result.length();
+		result += "." + print_from_fractional_part(fractional, exponent);
+		while (exponent++ < 0)
+			result.insert(point_locate, "0");
+
+		if (result.length() > 8)
+		{
+			result.erase(point_locate, 1);
+			result.insert(1, ".");
+			result += "e" + std::to_string(point_locate);
+		}
+	}
+	return result;
 }
 
 std::string Qfloat::toBinString() const
@@ -73,6 +294,7 @@ void cut_off_meaningful_digits(std::string &str)
 
 Qfloat calculate_from_integral_part(const std::string &src, int exponent = 0)	// exponent if pass must > 0
 {
+	// phải có bước kiểm tra tràn chưa để stop tại đó, ko cho chạy nữa
 	Qfloat result;
 	for (int i = 0; i < src.length(); i++)
 	{
@@ -86,7 +308,7 @@ Qfloat calculate_from_integral_part(const std::string &src, int exponent = 0)	//
 	return result;
 }
 
-Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	// // exponent if pass must < 0
+Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	// exponent if pass must < 0
 {
 	Qfloat result;
 	for (int i = src.length() - 1; i >= 0; i--)
@@ -101,7 +323,7 @@ Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	//
 	return result;
 }
 
-int move_floating_point_based_on_exponent(std::string &str, int &exponent) // exponent >= 0
+int locate_fix_point_based_on_exponent(std::string &str, int &exponent) // exponent >= 0
 {
 	// 1.2345e0  --> 1.2345
 	// 1.2345e3  --> 1234.5
@@ -119,6 +341,14 @@ int move_floating_point_based_on_exponent(std::string &str, int &exponent) // ex
 
 void Qfloat::fromDecString(std::string src)
 {
+	// xử lý tràn trong này ntn?
+	// các th tràn ở đây là gì? 
+	// 1. mũ lớn hơn 16383*log(2,10) ~ 4931.7: thì overflow, nhưng nhỏ hơn chưa chắc đã ko tràn
+	// 2. mũ nhỏ hơn -16495*log(2,10) ~ -4965.4: thì underflow
+	// 3. meaningful digits nhiều hơn 33, thì làm tròn, cắt bớt
+	// có vấn đề gì với denormalized number ở đây ko? chắc là ko, vì từ góc độ số hệ thập phân, làm sao biết được?
+
+
 	// HARDCORE
 	
 	// PREPROCESSING
@@ -170,6 +400,19 @@ void Qfloat::fromDecString(std::string src)
 	{
 		// viet theo kieu khoa hoc => tach rieng phan tri va phan mu
 		int exponent = std::stoi(src.substr(exp_locate + 1));
+		if (exponent > 4931)
+		{
+			if (this->getBit(127) == 0)
+				*this = Qfloat::pINF();
+			else
+				*this = Qfloat::nINF();
+			return;
+		}
+		if (exponent < -4965)
+		{
+			*this = _0;
+			return;
+		}
 		src.erase(exp_locate);
 		cut_off_meaningful_digits(src);
 		if (exponent >= 0)
@@ -180,7 +423,7 @@ void Qfloat::fromDecString(std::string src)
 				return;
 			}
 										// 2.345e678
-			int point_locate = move_floating_point_based_on_exponent(src, exponent);
+			int point_locate = locate_fix_point_based_on_exponent(src, exponent);
 			if (point_locate == src.length() - 1)
 			{
 				src.pop_back();
@@ -382,7 +625,7 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 			}
 		}
 	}
-	std::cout << I.DectoBin() << std::endl;
+	//std::cout << I.DectoBin() << std::endl;
 	/* 
 	if(I.getBit(112) == 0){
 
@@ -420,6 +663,7 @@ Qfloat operator+( const Qfloat& x,  const Qfloat& y)  {
 	return F;
 
 }
+
 void Qfloat::fromBinString(std::string src)
 {
 	int i = 0;

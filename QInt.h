@@ -88,13 +88,13 @@ public:
 	//use to convert binary string inBinStr to hexadecimal string outHexStr
 	friend void BinToHex(std::string inBinStr, std::string outHexStr);
 
-	static const QInt QInt_MAX()
+	static QInt QInt_MAX()
 	{
 		return QInt("0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
 		// 170141183460469231731687303715884105727 ~ 1.7e38
 	}
 
-	static const QInt QInt_MIN()
+	static QInt QInt_MIN()
 	{
 		return QInt("0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 		// -170141183460469231731687303715884105728 ~ -1.7e38
@@ -102,14 +102,14 @@ public:
 
 
 //input a QInt qi from istream istr
- friend std::istream& operator>> (std::istream& istr, QInt& qi);
+friend std::istream& operator>> (std::istream& istr, QInt& qi);
 
 //output a QInt qi to the ostream ostr
- friend std::ostream& operator<< (std::ostream& ostr,  QInt& qi);
+friend std::ostream& operator<< (std::ostream& ostr,  QInt& qi);
 
 
- static void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
- static void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+	static void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+	static void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
 
 friend QInt operator+(const QInt &x, const QInt &y);
 friend QInt operator-(const QInt &x, const QInt &y);

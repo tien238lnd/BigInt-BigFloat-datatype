@@ -39,6 +39,24 @@ void processQfloat(std::string& sinput, std::string& soutput);
 
 int main()
 {
+	/*double a = 9876543e301;
+	double b = 10;
+	double c = a*b;
+	double d = -9876543e301 * 10;
+
+	cout << "a = " << a << " : not overflow yet" << endl;
+	cout << "c = a * 10 = " << c << endl;
+	cout << "c / 0 = " << c / 0 << endl;
+	cout << "10 / 0 = " << b / 0 << endl;
+	cout << "c + c = " << c + c << endl;
+	cout << "c + 0 = " << c + 0 << endl;
+	cout << "c - 9a = " << c - 9*a << endl;
+	cout << "d = " << d << endl;
+	cout << "c + d = " << c + d << endl;*/
+	Qfloat x = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	Qfloat i, f;
+	x.modf(i, f);
+	cout << x.toBinString() << '\n' << i.toBinString() << '\n' << f.toBinString() << '\n';
 	//cout << QInt::QInt_MIN() << endl << QInt::QInt_MIN().DectoBin() << endl;
 
 	/*QInt x = "0b11000101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000";
@@ -47,14 +65,21 @@ int main()
 	cout << y << endl << y.DectoBin() << endl;
 	QInt z = y >> 2;
 	cout << z << endl << z.DectoBin() << endl;*/
-	Qfloat q1;// 1.25
-	q1.fromBinString("00111111111111110100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-	cout << q1.toBinString() << endl;
-	Qfloat q2; // 2.5
-	q2.fromBinString("01000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-	cout << q2.toBinString() << endl;
-	Qfloat q = q1 + q2;
-	cout << q.toBinString();
+	//Qfloat q1;	// 1.25	=> 1.01	=> 1.01e0
+	//q1.fromBinString("001111111111111101");
+	//cout << q1.toBinString() << endl;
+	//Qfloat q2; // 2.5	=> 10.1 => 1.01e1
+	//q2.fromBinString("010000000000000001");
+	//cout << q2.toBinString() << endl;
+	//Qfloat q = q1 + q2;	// 3.75 => 11.11 => 1.111e1
+	//cout << q.toBinString();
+
+	//Qfloat x = "0b0100000000000101111011"; // 1.111011e6 => 1111011 => 123
+	//cout << x.toBinString() << endl;
+	//Qfloat y = "0b00111111111111101";	// 1.1e-1  => 0.11 => 0.75
+	//cout << y.toBinString() << endl;
+	//Qfloat z = x + y;	// 123.75 => 1111011.11 => 1.11101111e6 => 010000000000010111101111
+	//cout << z.toBinString();
 
 	return 0;
 
