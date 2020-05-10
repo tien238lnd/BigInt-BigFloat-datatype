@@ -524,41 +524,200 @@ std::ostream & operator<<(std::ostream & ostr, const Qfloat & qf)
 	return ostr;
 }
 
-void Qfloat::addexponent(int exp)
+
+Qfloat operator*(const Qfloat& x, const Qfloat& y)
 {
-	char* thisexp = &(this->bytes[Qfloat::NUMBYTES - 2]);
-	char remember = 0;
-	int und = Qfloat::NUMBYTES - 16;
-	for (int i = 0; i < 15; i++)
+	Qfloat opr1 = x;
+	Qfloat opr2 = y;
+	Qfloat res = "0b0";
+
+	//if x==0
+	bool is_0 = true;
+	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
-		//get bit;
-		char bitiexp = (exp >> i) & 1;
-		char bitithis = getBit(und + i);
+		if (opr1.getBit(i) == 1) { is_0 = false; }
+	}
+	
+	if (is_0) { return res; }
 
-		//delete bit
-		exp &= ~(1 << i);
-
-		//set bit
-		setBit(und + i, (remember + bitiexp + bitithis) % 2);
-		remember = (remember + bitiexp + bitithis) / 2;
+	is_0 = true;
+	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
+	{
+		if (opr2.getBit(i) == 1) { is_0 = false; }
 	}
 
-	if (remember == 1 || exp != 0)//overflow exponent
-	{
-		for (int i = 0; i < 15; i++)
-		{
-			setBit(und + i, 1);
-		}
+	if (is_0) { return res; }
 
-		//not enough, the significant also must set to all zero ->infinity
+	res = opr1;
+	res.setBit(111, opr1.getBit(111) != opr2.getBit(111));
+	/////
+	//
+	int bias = 16383;
+	int und = Qfloat::NUMBITS - 16;
+	int exp1 = 0;
+	int exp2 = 0;
+	char opr1s[113] = { 0 };
+	char opr2s[113] = { 0 };
+	char oprres[226] = { 0 };
+	int valzone1 = 0;
+	int valzone2 = 0;
+
+	//get raw exp from two number
+	for (int i = und; i < Qfloat::NUMBITS - 1; i++)
+	{
+		exp1 |= (1 << (i - und)) * opr1.getBit(i);
+		exp2 |= (1 << (i - und)) * opr2.getBit(i);
+	}
+	//////////////
+	///opr1s operand1 significant
+	int denormalize_gap = 0;//exp gap with normalize form
+	if (exp1 == 0)//denormalize
+	{
+		denormalize_gap = 1;
+		exp1--;
+		while (opr1.getBit(112 - denormalize_gap) == 0) 
+		{
+			denormalize_gap++;
+			exp1--;
+		}
+		for (int i = 112; i >= denormalize_gap; i--)
+		{
+			opr1s[i] = opr1.getBit(i - denormalize_gap);
+		}
+	}
+	else
+	{
+		for (int i = 111; i >= 0; i--)
+		{
+			opr1s[i] = opr1.getBit(i);
+		}
+		opr1s[112] = 1;
+	}
+
+	////opr2s operand2 significant 
+	denormalize_gap = 0;//exp gap with normalize form
+	if (exp2 == 0)//denormalize
+	{
+		denormalize_gap = 1;
+		while (opr2.getBit(112 - denormalize_gap) == 0)
+		{
+			denormalize_gap++;
+			exp2--;
+		}
+		for (int i = 112; i >= denormalize_gap; i--)
+		{
+			opr2s[i] = opr2.getBit(i - denormalize_gap);
+		}
+	}
+	else
+	{
+		for (int i = 111; i >= 0; i--)
+		{
+			opr2s[i] = opr2.getBit(i);
+		}
+		opr2s[112] = 1;
+	}
+	//////////
+
+	exp1 = exp1 + exp2 - bias;
+
+	/////
+	//multiply significant
+	for (int i = 0; i <= 112; i++)//i-start index in res to plus opr1
+	{
+		if (opr2s[i] != 0)
+		{	//plus
+			char remember = 0;
+
+			int j = 0;
+			for (; j <= 112; j++)
+			{
+				char temp = oprres[i + j] + opr1s[j] + remember;
+				oprres[i + j] = temp % 2;
+				remember = temp / 2;
+			}
+
+			oprres[i + j] = remember;
+		}
+	}
+
+	//
+	int afterdecimal = 223;
+	if (oprres[225] == 1)
+	{
+		afterdecimal = 224;
+		exp1 += 1;
+	}
+
+	///////////
+	///overflow
+	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
+	{
+		res.setBit(111, opr1.getBit(111)!=opr2.getBit(111));//sign
+
+		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
+		{
+			res.setBit(i, 1);
+		}
 		for (int i = 0; i < und; i++)
 		{
-			setBit(i, 0);
+			res.setBit(i, 0);
+		}
+		return res;
+	}
+	//underflow
+	if (exp1 < -112)//underflow
+	{
+		for (int i = 0; i < 112; i++)
+		{
+			res.setBit(i, 0);
+		}
+		return res;
+	}
+	/////
+	if (exp1 < 1)
+	{
+		for (int i = und; i < 111; i++)
+		{
+			res.setBit(i, 0);
+		}
+		exp1++;
+		afterdecimal++;
+
+		int i = 111;
+		while (exp1 < 0)
+		{
+			res.setBit(i, 0);
+			i--;
+			exp1++;
+		}
+
+		while (i >= 0)
+		{
+			res.setBit(i, oprres[afterdecimal]);
+			i--;
+			afterdecimal--;
 		}
 	}
+	else
+	{	//exp
+		for (int i = 0; i < 15; i++)
+		{
+			res.setBit(und + i, (exp1 >> i) & 1);
+		}
+		for (int i = 111; i >= 0; i--)
+		{
+			res.setBit(i, oprres[afterdecimal]);
+			afterdecimal--;
+		}
+	}
+	/////
+
+	//set sign
+	res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));
+
+	return res;
 }
-
-
 Qfloat operator-(const Qfloat & x, const Qfloat & y)
 {
 	return Qfloat();
