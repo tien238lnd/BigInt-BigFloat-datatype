@@ -162,7 +162,7 @@ bool isZero(const Qfloat &a)
 
 bool almost_equal(const Qfloat &a, const Qfloat &b)	// dùng để nhận diện các chữ số trong bảng BCD
 {
-	for (int i = 5; i < 127; i++)	//  don't care about sign bit , vì trong bảng cũng có số 0. Chạy từ 5 là bỏ qua 5 bit đầu, kiểu như epsilon
+	for (int i = 5; i < 127; i++)	//  don't care about sign bit , vì trong bảng cũng có số 0. Chạy từ 5 là bỏ qua 5 bit cuối, kiểu như epsilon
 		if (a.getBit(i) != b.getBit(i))
 			return false;
 	return true;
