@@ -102,9 +102,9 @@ void Qfloat::modf(Qfloat &integral, Qfloat &fractional) const
 	}
 	else
 	{
-		bool sign = this->getBit(127);
+		/*bool sign = this->getBit(127);
 		integral.setBit(127, sign);
-		fractional.setBit(127, sign);
+		fractional.setBit(127, sign);*/
 		int o = 126;	// index run on the bit-chain of original float
 		// Exponent of integral part is the same as the original
 		for (; o > 111; o--)
@@ -313,6 +313,8 @@ std::string Qfloat::toDecString() const
 			result += "e" + std::to_string(point_locate);
 		}
 	}
+	if (this->getBit(127) == 1)
+		result.insert(0, "-");
 	return result;
 }
 
