@@ -808,35 +808,63 @@ std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf)
 	return ostr;
 }
 
+
 Qfloat operator*(const Qfloat& x, const Qfloat& y)
 {
 	Qfloat opr1 = x;
 	Qfloat opr2 = y;
 	Qfloat res = "0b0";
+	int und = Qfloat::NUMBITS - 16;
 
 	//if x==0
-	bool is_0 = true;
+	bool is_ = true;
 	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
-		if (opr1.getBit(i) == 1) { is_0 = false; }
+		if (opr1.getBit(i) == 1) { is_ = false; break; }
 	}
-
-	if (is_0) { return res; }
-
-	is_0 = true;
+	if (is_) { return res; }
+	//if y==0
+	is_ = true;
 	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
-		if (opr2.getBit(i) == 1) { is_0 = false; }
+		if (opr2.getBit(i) == 1) { is_ = false; break; }
 	}
-
-	if (is_0) { return res; }
+	if (is_) { return res; }
+	//if(x==infinity or x==Nan)
+	char xis_ = 1;
+	for (int i = und; i <= 126; i++)
+	{
+		if (opr1.getBit(i) != 1) { xis_ = 0; break; }
+	}
+	if (xis_ == 1) {
+		for (int i = und - 1; i >= 0; i--)
+		{
+			if (opr1.getBit(i) == 1) { xis_ = 2; break; }
+		}
+	}
+	//y=infinity or y=nan
+	char yis_ = 1;
+	for (int i = und; i <= 126; i++)
+	{
+		if (opr2.getBit(i) != 1) { yis_ = 0; break; }
+	}
+	if (yis_ == 1)
+	{
+		for (int i = und - 1; i >= 0; i--)
+		{
+			if (opr2.getBit(i) == 1) { yis_ = 2; break; }
+		}
+	}
+	if (xis_ == 2) { return opr1; }
+	else if (yis_ == 2) { return opr2; }
+	else if (xis_ == 1) { return opr1; }
+	else if (yis_ == 1) { return opr2; }
 
 	res = opr1;
 	res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));
 	/////
 	//
 	int bias = 16383;
-	int und = Qfloat::NUMBITS - 16;
 	int exp1 = 0;
 	int exp2 = 0;
 	char opr1s[113] = { 0 };
@@ -925,12 +953,36 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 		}
 	}
 
+	
 	//
 	int afterdecimal = 223;
 	if (oprres[225] == 1)
 	{
 		afterdecimal = 224;
 		exp1 += 1;
+	}
+	//round
+	if (oprres[afterdecimal-112] == 1)
+	{
+		if (oprres[afterdecimal - 111] == 1 || oprres[afterdecimal - 113] == 1)
+		{
+			//add one smallest bit
+			char remember = 1;
+
+			int j = 0;
+			for (; j <= 112; j++)
+			{
+				char temp = oprres[afterdecimal-112+j] + remember;
+				oprres[afterdecimal - 112 + j] = temp % 2;
+				remember = temp / 2;
+			}
+			if (remember == 1)
+			{
+				afterdecimal++;
+				oprres[afterdecimal] = 0;
+				exp1 += 1;
+			}
+		}
 	}
 
 	///////////
@@ -995,6 +1047,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 			afterdecimal--;
 		}
 	}
+
 	/////
 
 	//set sign
@@ -1010,21 +1063,19 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 	int und = Qfloat::NUMBITS - 16;
 
 	//if x==0
-	bool is_0 = true;
+	bool xis_0 = true;
 	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
-		if (opr1.getBit(i) == 1) { is_0 = false; }
+		if (opr1.getBit(i) == 1) { xis_0 = false; }
 	}
 
-	if (is_0) { return res; }//0
-
-	is_0 = true;
+	bool yis_0 = true;
 	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
-		if (opr2.getBit(i) == 1) { is_0 = false; }
+		if (opr2.getBit(i) == 1) { yis_0 = false; }
 	}
 
-	if (is_0) {
+	if (yis_0) {//return Nan
 		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{
 			res.setBit(i, 1);
@@ -1036,6 +1087,37 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 		return res;
 	}
 
+	//if(x==infinity or x==Nan)
+	char xis_ = 1;
+	for (int i = und; i <= 126; i++)
+	{
+		if (opr1.getBit(i) != 1) { xis_ = 0; break; }
+	}
+	if (xis_ == 1) {
+		for (int i = und - 1; i >= 0; i--)
+		{
+			if (opr1.getBit(i) == 1) { xis_ = 2; break; }
+		}
+	}
+	//y=infinity or y=nan
+	char yis_ = 1;
+	for (int i = und; i <= 126; i++)
+	{
+		if (opr2.getBit(i) != 1) { yis_ = 0; break; }
+	}
+	if (yis_ == 1)
+	{
+		for (int i = und - 1; i >= 0; i--)
+		{
+			if (opr2.getBit(i) == 1) { yis_ = 2; break; }
+		}
+	}
+	if (xis_ == 2) { return opr1; }
+	else if (yis_ == 2) { return opr2; }
+	if (xis_0) { return res; }//0
+	else if (xis_ == 1) { return opr1; }
+	else if (yis_ == 1) { return res; }
+
 	res = opr1;
 	res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));
 	/////
@@ -1043,9 +1125,9 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 	int bias = 16383;
 	int exp1 = 0;
 	int exp2 = 0;
-	char oprres[113] = { 0 };
+	char oprres[115] = { 0 };
 	char opr2s[113] = { 0 };
-	char opr1s[227] = { 0 };
+	char opr1s[228] = { 0 };
 
 	//get raw exp from two number
 	for (int i = und; i < Qfloat::NUMBITS - 1; i++)
@@ -1077,9 +1159,9 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 		}
 		opr1s[112] = 1;
 	}
-	for (int i = 225; i >= 113; i--)
+	for (int i = 226; i >= 114; i--)
 	{
-		opr1s[i] = opr1s[i - 113];
+		opr1s[i] = opr1s[i - 114];
 	}
 
 	////opr2s operand2 significant 
@@ -1112,12 +1194,13 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 	//////////////////////////////////
 	//divide significant
 	int opr1_vs_opr2 = 0;
-	for (int i = 113; i >= 1; i--)
+	for (int i = 114; i >= 0; i--)
 	{
+		//compare
 		opr1_vs_opr2 = 1;
 		if (opr1s[i + 113] == 0)
 		{
-			for (int kt = 0; kt < 113; kt++)
+			for (int kt = 0; kt <= 112; kt++)
 			{
 				opr1_vs_opr2 = opr1s[i + 112 - kt] - opr2s[112 - kt];
 
@@ -1130,27 +1213,46 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 		{
 			bool remember = 0;
 			//subtract
-			for (int j = 0; j <= 113; j++)
+			for (int j = 0; j <= 112; j++)
 			{
 				int temp = opr1s[i + j] - (remember + opr2s[j]);
 				opr1s[i + j] = temp + (temp < 0) * 2;
 				remember = temp < 0;
 			}
 
-			oprres[i - 1] = 1;
+			oprres[i] = 1;
 		}
 		else//if after substract we get a negative
 		{
-			oprres[i - 1] = 0;
+			oprres[i] = 0;
 		}
 
 	}
 
-	//
-	int afterdecimal = 111;
-	if (oprres[112] == 0)
+
+	//round
+	if (oprres[1] == 1)
 	{
-		afterdecimal = 110;
+		if (oprres[2] == 1 || oprres[0] == 1)
+		{
+			//add one smallest bit
+			char remember = 1;
+
+			int j = 2;
+			for (; j <= 114; j++)
+			{
+				char temp = oprres[j] + remember;
+				oprres[j] = temp % 2;
+				remember = temp / 2;
+			}
+			//last remember will be 0, 'cause of math twist
+		}
+	}
+	//
+	int afterdecimal = 113;
+	if (oprres[114] == 0)
+	{
+		afterdecimal = 112;
 		exp1 -= 1;
 	}
 
@@ -1158,9 +1260,8 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 	///overflow
 	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
 	{
+		res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));//sign
 		//infinity
-
-		/*res.setBit(Qfloat::NUMBITS - 1, opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1));//sign
 		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{
 			res.setBit(i, 1);
@@ -1169,8 +1270,7 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 		{
 			res.setBit(i, 0);
 		}
-		return res;*/
-		res = opr1.getBit(Qfloat::NUMBITS - 1) != opr2.getBit(Qfloat::NUMBITS - 1) ? _nINF : _pINF;
+		return res;
 	}
 	//underflow
 	if (exp1 < -(Qfloat::NUMBITS - 16))//underflow
@@ -1225,4 +1325,3 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 
 	return res;
 }
-
