@@ -6,7 +6,10 @@
 using namespace std;
 
 std::string lineparseQInt(std::string line);
+std::string lineparseQfloat(std::string line);
 QInt calculate(QInt& operand1, QInt& operand2, string& operatoro);
+Qfloat calculate(Qfloat& operand1, Qfloat& operand2, string& operatoro);
+
 void processQInt(std::string& sinput, std::string& soutput);
 void processQfloat(std::string& sinput, std::string& soutput);
 
@@ -26,14 +29,7 @@ void processQfloat(std::string& sinput, std::string& soutput);
 //	{
 //		processQfloat(input, output);
 //	}
-//
-//	QInt a("110111010000111011");
-//	cout << a.DectoBin() << endl;
-//	QInt b = rol(a, 2);
-//	cout << b << endl;
-//	cout << (rol(a, 2)).DectoBin() << endl;
-//
-//	cout << "Done! Cheer!" << endl;
+//	cout << "Done!" << endl;
 //	return 0;
 //}
 
@@ -186,7 +182,22 @@ int main()
 	//std::cout << "7654321|987654321|987654321|987654321|98765	4321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
 	//cout << z.toBinString();
 	//
-	//		
+	//	
+	//string input = argv[1];
+	//string output = argv[2];
+	//string stype = argv[3];
+	//int type = stoi(stype);
+	//
+	//if (type == 1)
+	//{
+	//	processQInt(input, output);
+	//}
+	//else
+	//{
+	//	processQfloat(input, output);
+	//}
+
+	//cout << "Done!" << endl;
 	return 0;
 
 }
@@ -223,7 +234,31 @@ void processQInt(std::string& sinput, std::string& soutput)
 
 void processQfloat(std::string& sinput, std::string& soutput)
 {
+	//open file
+	ifstream input(sinput);
+	if (!input.is_open()) { return; }
+	ofstream output(soutput);
+	if (!output.is_open()) { input.close(); return; }
 
+	std::string line;
+
+	//first line
+	if (getline(input, line) && line.length() != 0)
+	{
+		output << lineparseQfloat(line);
+	}
+	//process every line after
+	while (!input.eof())
+	{
+		if (getline(input, line) && line.length() != 0)
+		{
+			output << endl << lineparseQfloat(line);
+		}
+	}
+
+	//close file
+	input.close();
+	output.close();
 }
 
 std::string lineparseQInt(std::string line)
@@ -263,7 +298,7 @@ std::string lineparseQInt(std::string line)
 		{
 			thirdStr += line[i];
 			i++;
-		} while (i < linelength && (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+		} while (i < linelength && ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
 
 	}
 	else
@@ -281,7 +316,7 @@ std::string lineparseQInt(std::string line)
 			{
 				thirdStr += line[i];
 				i++;
-			} while (i < linelength && (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+			} while (i < linelength && ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
 		}
 		else //third string is a operator
 		{
@@ -302,7 +337,7 @@ std::string lineparseQInt(std::string line)
 		{
 			fourthStr += line[i];
 			i++;
-		} while (i < linelength && (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+		} while (i < linelength && ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
 	}
 
 	////////////////////
@@ -332,10 +367,12 @@ std::string lineparseQInt(std::string line)
 			secondStr = "0x" + secondStr;
 			fourthStr = "0x" + fourthStr;
 		}
+		
 		QInt operand1(secondStr);
 		QInt operand2(fourthStr);
 
 		qiResult = calculate(operand1, operand2, thirdStr);
+
 	}
 	else//convert between bases
 	{
@@ -417,3 +454,126 @@ QInt calculate(QInt& operand1, QInt& operand2, string& operatoro)
 	}
 	return "0";
 }
+
+std::string lineparseQfloat(std::string line)
+{
+	std::string firstStr;
+	std::string secondStr;
+	std::string thirdStr;
+	std::string fourthStr;
+	int linelength = line.length();
+	int i = 0;
+
+	////////////////////
+	//parse
+	////////////////////
+	//base or the first base
+	while (line[i] != ' ')
+	{
+		firstStr += line[i];
+		i++;
+	}
+	while (line[i] == ' ') { i++; }
+
+	//first operand or second base
+	do
+	{
+		secondStr += line[i];
+		i++;
+	} while (line[i]=='.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+
+	while (line[i] == ' ') { i++; }
+
+	bool third_is_operator = false;
+	//operator or the number to convert
+	thirdStr += line[i];
+	i++;
+
+	if (i >= linelength)
+	{//do nothing, just use to pass the following branches if face this case
+	}
+	//third string is a number
+	else if (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
+	{
+		do
+		{
+			thirdStr += line[i];
+			i++;
+		} while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+	}
+	else //third string is a operator
+	{
+		third_is_operator = true;
+		while (i < linelength && line[i] != ' ')
+		{
+			thirdStr += line[i];
+			i++;
+		}
+	}
+
+	while (i < linelength && line[i] == ' ') { i++; }
+	//may or may not be the second operand
+	if (third_is_operator)
+	{
+		do
+		{
+			fourthStr += line[i];
+			i++;
+		} while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+	}
+
+	////////////////////
+	//process
+	////////////////////
+	int firstbase = stoi(firstStr);
+	int resultbase = firstbase;
+	Qfloat qfResult;
+
+	if (third_is_operator)//calculate
+	{
+		if (resultbase == 2)
+		{
+			secondStr = "0b" + secondStr;
+			fourthStr = "0b" + fourthStr;
+		}
+
+		Qfloat operand1(secondStr);
+		Qfloat operand2(fourthStr);
+
+		qfResult = calculate(operand1, operand2, thirdStr);
+	}
+	else//convert between bases
+	{
+		resultbase = stoi(secondStr);
+		if (firstbase == 2) { thirdStr = "0b" + thirdStr; }
+		
+		qfResult = thirdStr;
+	}
+
+	if (resultbase == 2)
+	{
+		return qfResult.toBinString();
+	}
+	else
+	{
+		return qfResult.toDecString();
+	}
+}
+
+
+Qfloat calculate(Qfloat& operand1, Qfloat& operand2, string& operatoro)
+{
+	switch (operatoro[0])
+	{
+	case '+':
+		return operand1 + operand2;
+	case '-':
+		return operand1 - operand2;
+	case '*':
+		return operand1 * operand2;
+	case '/':
+		return operand1 / operand2;
+	}
+	return "0";
+}
+
