@@ -215,7 +215,7 @@ std::string print_from_integral_part(Qfloat &src, int &exponent)
 	while (true) {
 		digit_extracted = digit_extracted * _10; // 0.3 -> 3
 		result = digit_extracted.toChar() + result;
-		if (isZero(src))
+		if (isZero(src) /*|| result.length() > 33*/) 
 			break;
 		Qfloat integral_with_1_digit_after_point = src / _10;
 		integral_with_1_digit_after_point.modf(src, digit_extracted);
@@ -240,11 +240,13 @@ std::string print_from_fractional_part(Qfloat &src, int &exponent)
 	}
 	while (true) {
 		result = result + digit_extracted.toChar();
-		if (isZero(src))
+		if (isZero(src) || result.length() > 32)
 			break;
 		Qfloat fractional_with_1_digit_before_point = src * _10;
 		fractional_with_1_digit_before_point.modf(digit_extracted, src);
 	}
+	while (result.back() == '0')
+		result.pop_back();
 	return result;
 }
 
@@ -271,8 +273,9 @@ std::string Qfloat::toDecString() const
 		result = print_from_integral_part(integral, exponent);
 		if (exponent + result.length() > 6)
 		{
-			result.insert(1, ".");
 			result += "e" + std::to_string(exponent + result.length() - 1);
+			if (result[1] != 'e')
+				result.insert(1, ".");
 		}
 		else
 		{
@@ -284,15 +287,17 @@ std::string Qfloat::toDecString() const
 	{
 		int exponent = -1;
 		result = print_from_fractional_part(fractional, exponent);
-		if (exponent + result.length() > 3)
+		if (-exponent + result.length() > 6)
 		{
-			result.insert(1, ".");
+			if (result.length() > 1)
+				result.insert(1, ".");
 			result += "e" + std::to_string(exponent);
 		}
 		else
 		{
-			while (exponent++ < 0)
-				result = "0" + result;
+			result = "0." + result;
+			while (exponent++ < -1)
+				result.insert(2, "0");
 		}
 	}
 	else
@@ -303,14 +308,14 @@ std::string Qfloat::toDecString() const
 			result += "0";
 		int point_locate = result.length();
 		result += "." + print_from_fractional_part(fractional, exponent);
-		while (exponent++ < 0)
-			result.insert(point_locate, "0");
+		while (exponent++ < -1)
+			result.insert(point_locate + 1, "0");
 
 		if (result.length() > 8)
 		{
 			result.erase(point_locate, 1);
 			result.insert(1, ".");
-			result += "e" + std::to_string(point_locate);
+			result += "e" + std::to_string(point_locate - 1);
 		}
 	}
 	if (this->getBit(127) == 1)
