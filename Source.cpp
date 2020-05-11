@@ -39,7 +39,7 @@ void processQfloat(std::string& sinput, std::string& soutput);
 
 int main()
 {
-	Qfloat x = "34";
+	Qfloat x = "-1";
 	cout << x;
 	/*double a = 9876543e301;
 	double b = 10;

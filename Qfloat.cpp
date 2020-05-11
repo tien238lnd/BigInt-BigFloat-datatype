@@ -394,9 +394,10 @@ void Qfloat::fromDecString(std::string src)
 
 	// PREPROCESSING
 	// B1: Sign
+	bool sign = 0;
 	if (src[0] == '-')
 	{
-		this->setBit(127, 1);
+		sign = 1;
 		src.erase(0, 1);
 	}
 	// B2: Exponent
@@ -435,7 +436,6 @@ void Qfloat::fromDecString(std::string src)
 				*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
 			}
 		}
-		return;
 	}
 	else
 	{
@@ -461,32 +461,30 @@ void Qfloat::fromDecString(std::string src)
 			if (src.length() == 1)		// 2e678
 			{
 				*this = calculate_from_integral_part(src, exponent);
-				return;
 			}
-										// 2.345e678
-			int point_locate = locate_fix_point_based_on_exponent(src, exponent);
-			if (point_locate == src.length() - 1)
-			{
-				src.pop_back();
-				*this = calculate_from_integral_part(src, exponent);
-				return;
-			}
-			else
-			{
-				std::string integral_part = src.substr(0, point_locate);
-				std::string fractional_part = src.substr(point_locate + 1);
-				*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
-				return;
+			else {							// 2.345e678
+				int point_locate = locate_fix_point_based_on_exponent(src, exponent);
+				if (point_locate == src.length() - 1)
+				{
+					src.pop_back();
+					*this = calculate_from_integral_part(src, exponent);
+				}
+				else
+				{
+					std::string integral_part = src.substr(0, point_locate);
+					std::string fractional_part = src.substr(point_locate + 1);
+					*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
+				}
 			}
 		}
 		else
 		{
 			src.erase(1, 1); exponent++;
 			*this = calculate_from_fraction_part(src, exponent);
-			return;
 		}
 	}
-
+	this->setBit(127, sign);
+	return;
 }
 
 
