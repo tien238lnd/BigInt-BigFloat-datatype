@@ -953,7 +953,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 		}
 	}
 
-	
+
 	//
 	int afterdecimal = 223;
 	if (oprres[225] == 1)
@@ -962,7 +962,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 		exp1 += 1;
 	}
 	//round
-	if (oprres[afterdecimal-112] == 1)
+	if (oprres[afterdecimal - 112] == 1)
 	{
 		if (oprres[afterdecimal - 111] == 1 || oprres[afterdecimal - 113] == 1)
 		{
@@ -970,10 +970,10 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 			char remember = 1;
 
 			int j = 0;
-			for (; j <= 112; j++)
+			for (; j <= 111; j++)
 			{
-				char temp = oprres[afterdecimal-112+j] + remember;
-				oprres[afterdecimal - 112 + j] = temp % 2;
+				char temp = oprres[afterdecimal - 111 + j] + remember;
+				oprres[afterdecimal - 111 + j] = temp % 2;
 				remember = temp / 2;
 			}
 			if (remember == 1)
@@ -985,6 +985,16 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 		}
 	}
 
+	///set last bit to common pattern if there is a common pattern
+	int lastdigit = afterdecimal - 111;
+	int common_pattern_last_for = 0;
+	int i = afterdecimal;
+	for (; i > lastdigit; i--)
+	{
+		if (oprres[i + 1] != oprres[i]) { common_pattern_last_for = 0; }
+		else { common_pattern_last_for += 1; }
+	}
+	if (common_pattern_last_for >= 4) { oprres[i] = oprres[i + 1]; }
 	///////////
 	///overflow
 	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
@@ -1248,6 +1258,17 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 			//last remember will be 0, 'cause of math twist
 		}
 	}
+
+	///set last bit to common pattern if there is a common pattern
+	int lastdigit = 2;
+	int common_pattern_last_for = 0;
+	int i = 113;
+	for (; i > lastdigit; i--)
+	{
+		if (oprres[i + 1] != oprres[i]) { common_pattern_last_for = 0; }
+		else { common_pattern_last_for += 1; }
+	}
+	if (common_pattern_last_for >= 4) { oprres[i] = oprres[i + 1]; }
 	//
 	int afterdecimal = 113;
 	if (oprres[114] == 0)
