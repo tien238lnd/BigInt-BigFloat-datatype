@@ -10,6 +10,13 @@ class Qfloat {
 	static const int BIAS = 16383;
 	char bytes[NUMBYTES];	//		1/15/112
 
+public:
+	static const char Zero = 0;
+	static const char Infinity = 1;
+	static const char Nan = 2;
+	static const char Denormalize = 3;
+	static const char Normal = 4;
+
 
 public:
 	//set the bit at position i the value b

@@ -84,7 +84,35 @@ int Qfloat::get_exponent() const // of 2, not 10
 	return x - 16383;*/
 }
 
+char CheckTypeofQfloat(const Qfloat& q) {
+	short tongmu = 0, tongsignicand = 0;
+	for (int i = 126; i >= 112; i--)
+	{
+		tongmu += q.getBit(i);
+	}
 
+	for (int i = 111; i >= 0; i--)
+	{
+		tongsignicand += q.getBit(i);
+	}
+
+	if (tongmu + tongsignicand == 0) {
+		return Qfloat::Zero;
+	}
+	else if (tongmu == 0 && tongsignicand != 0) {
+		return Qfloat::Denormalize;
+	}
+	else if (tongmu == 15 && tongsignicand == 0) {
+		return Qfloat::Infinity;
+	}
+	else if (tongmu == 15 && tongsignicand != 0) {
+		return Qfloat::Nan;
+	}
+	else {
+		return Qfloat::Normal;
+	}
+
+}
 
 void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 {
@@ -594,14 +622,16 @@ bool IsInfinityOrNaN(const Qfloat& x) {
 
 Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 
-	if (IsInfinityOrNaN(x) == true || IsInfinityOrNaN(y) == true) {
+	char checkX = CheckTypeofQfloat(x);
+	char checkY = CheckTypeofQfloat(y);
+
+	if (checkX == Qfloat::Infinity || checkX == Qfloat::Nan || checkY == Qfloat::Infinity || checkY == Qfloat::Nan) {
 		return _NaN;
 	}
-
-	if (Kiemtrabang0(x)) {
+	else if (checkX == Qfloat::Zero) {
 		return y;
 	}
-	else if (Kiemtrabang0(y)) {
+	else if (checkY == Qfloat::Zero) {
 		return x;
 	}
 
@@ -610,29 +640,16 @@ Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 	bool WeAreAdding2Denormalize = true;
 	bool OverFlowDenormalize = false;
 
-	if (Kiemtramubang0(x) == false) {
-
+	if (checkX == Qfloat::Normal) {
 		first.setBit(112, 1);
 		WeAreAdding2Denormalize = false;
-
 	}
-	else {
+	else {first.setBit(112, 0);}
 
-		first.setBit(112, 0);
-
-	}
-
-	if (Kiemtramubang0(y) == false) {
-
+	if (checkY == Qfloat::Normal) {
 		second.setBit(112, 1);
-		WeAreAdding2Denormalize = false;
-
-	}
-	else {
-
-		second.setBit(112, 0);
-
-	}
+		WeAreAdding2Denormalize = false;}
+	else { second.setBit(112, 0);}
 
 	for (int i = 0; i <= 111; i++) {
 
@@ -1429,3 +1446,4 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 
 	return res;
 }
+

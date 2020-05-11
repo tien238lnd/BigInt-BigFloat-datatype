@@ -847,3 +847,88 @@ QInt ror(const QInt & x, int k)	// cài đặt bên trong là xoay trái
 }
 
 
+int GetRemainder(const QInt& x, const QInt& y) {
+	QInt sobichia = x;
+	QInt sochia = y;
+	int ans = 0;
+
+	//neu co so am -> chuyen ve so khong am
+	bool dau1 = sobichia.getBit(127);
+	bool dau2 = sochia.getBit(127);
+	if (dau1) {
+		sobichia.convertTo2sComplement();
+	}
+	if (dau2)
+	{
+		sochia.convertTo2sComplement();
+	}
+
+
+	// Danh dau do dai cua 2 so chia va bi chia
+	//vd : mark = 5 -> car so chia va so bi chia co do dai la 6 bits
+	int mark;
+
+	// vua xet xem so bi chia co lon hon so chia khong ? vua xet do dai
+	for (int i = 127; i >= 0; i--)
+	{
+		bool a = sobichia.getBit(i);
+		bool b = sochia.getBit(i);
+
+		// Neu nhu so bi chia be hon so chia
+		if (a == 0 && b == 1)
+		{
+			return sobichia.castToInt() ;
+		}
+		else if (a == 1) {
+			mark = i;
+			break;
+		}
+	}
+
+	// mark se co dang sochia00000 (so luong bit 0 o phia sau bang so bit cua sobichia)
+	QInt mask = sochia;
+	mask = mask << (mark + 1);
+
+	// dung de lap
+	int count = mark;
+	for (int i = count; i >= 0; i--)
+	{
+		sobichia = sobichia << 1;
+		bool behon = false;
+
+		for (int k = 2 * mark + 1; k >= mark + 1; k--)
+		{
+			if (sobichia.getBit(k) < mask.getBit(k)) {
+				behon = true;
+				break;
+			}
+
+			if (sobichia.getBit(k) > mask.getBit(k)) {
+				break;
+			}
+		}
+
+		// kiem tra xem kq co am khong
+		if (behon)
+		{
+			sobichia.setBit(0, 0);
+
+		}
+		else
+		{
+			sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
+			sobichia.setBit(0, 1);
+		}
+	}
+
+
+	int Pow2 = 1;
+	for (int i = mark + 1; i <= 2*mark + 1; i++)
+	{
+		ans += sobichia.getBit(i) * Pow2;
+		Pow2 = Pow2 * 2;
+	}
+
+	return ans;
+
+}

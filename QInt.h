@@ -100,6 +100,7 @@ public:
 		// -170141183460469231731687303715884105728 ~ -1.7e38
 	}
 
+	friend int GetRemainder(const QInt& x, const QInt& y);
 
 //input a QInt qi from istream istr
 friend std::istream& operator>> (std::istream& istr, QInt& qi);
