@@ -86,7 +86,7 @@ int Qfloat::get_exponent() const // of 2, not 10
 
 
 
-void Qfloat::modf(Qfloat &integral, Qfloat &fractional) const
+void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 {
 	integral = fractional = _0;
 	int exp = this->get_exponent();
@@ -135,11 +135,61 @@ void Qfloat::modf(Qfloat &integral, Qfloat &fractional) const
 			{
 				fractional.setBit(f, (exp_frac_bias >> i & 1));
 			}
+
+			int save_o = o;
 			// Significant of fraction part is from that first bit 1 to end in the original
 			for (; o >= 0; o--, f--)
 			{
 				fractional.setBit(f, this->getBit(o));
 			}
+			
+			//found pattern
+			int num_type_of_pattern = (save_o >= 3)* save_o / 3;
+			int* pattern_have_i_bit = new int[num_type_of_pattern + 1];
+			for (int i = 1; i <= num_type_of_pattern; i++) { pattern_have_i_bit[i] = 0; }
+
+			for (int id = 0; id <= save_o; id++)
+			{
+				for (int i = 1; i <= num_type_of_pattern; i++)
+				{
+					if (this->getBit(id) != this->getBit(id % i))
+					{
+						if (pattern_have_i_bit[i] == id / i) { pattern_have_i_bit[i]--; }
+					}
+					else
+					{
+						if (id % i == i - 1 && pattern_have_i_bit[i] == id / i)
+						{
+							pattern_have_i_bit[i]++;
+						}
+					}
+				}
+			}
+
+			int max_pattern = -1;
+			int max_weight_pattern = 0;
+			for (int i = 1; i <= num_type_of_pattern; i++)
+			{
+				if (pattern_have_i_bit[i] * (i / 2 + 1) > max_weight_pattern)
+				{
+					max_weight_pattern = pattern_have_i_bit[i] * (i / 2 + 1);
+					max_pattern = i;
+				}
+			}
+
+			//if found pattern
+			if (max_pattern != -1)
+			{
+				int id = max_pattern - 1;
+				while (f >= 0)
+				{
+					fractional.setBit(f, this->getBit(id));
+					id--;
+					f--;
+					if (id < 0) { id = max_pattern - 1; }
+				}
+			}
+			delete[]pattern_have_i_bit;
 		}
 	}
 }
@@ -152,7 +202,7 @@ void Qfloat::modf(Qfloat &integral, Qfloat &fractional) const
 //	return true;
 //}
 
-bool isZero(const Qfloat &a)
+bool isZero(const Qfloat& a)
 {
 	for (int i = 0; i < 127; i++)	// don't care about sign bit  
 		if (a.getBit(i) != 0)
@@ -160,15 +210,18 @@ bool isZero(const Qfloat &a)
 	return true;
 }
 
-bool almost_equal(const Qfloat &a, const Qfloat &b)	// dùng để nhận diện các chữ số trong bảng BCD
+bool almost_equal(const Qfloat& a, const Qfloat& b)	// dùng để nhận diện các chữ số trong bảng BCD
 {
+	Qfloat c = a - b;
+	if (c.getBit(127) == 1) { c = "0b0" - c; }
+
 	for (int i = 5; i < 127; i++)	//  don't care about sign bit , vì trong bảng cũng có số 0. Chạy từ 5 là bỏ qua 5 bit cuối, kiểu như epsilon
-		if (a.getBit(i) != b.getBit(i))
+		if (c.getBit(i) != 0)
 			return false;
 	return true;
 }
 
-bool strict_equal(const Qfloat &a, const Qfloat &b)	// chỉ dùng để nhận diện +inf và -inf
+bool strict_equal(const Qfloat& a, const Qfloat& b)	// chỉ dùng để nhận diện +inf và -inf
 {
 	for (int i = 0; i < 128; i++)	// this function care about sign bit  
 		if (a.getBit(i) != b.getBit(i))
@@ -176,7 +229,7 @@ bool strict_equal(const Qfloat &a, const Qfloat &b)	// chỉ dùng để nhận 
 	return true;
 }
 
-bool isNaN(const Qfloat &a)
+bool isNaN(const Qfloat& a)
 {
 	for (int i = 127; i >= 111; i--)
 		if (a.getBit(i) != 1)
@@ -191,13 +244,31 @@ bool isNaN(const Qfloat &a)
 
 char Qfloat::toChar() const
 {
-	for (int i = 0; i < 10; i++)
-		if (almost_equal(*this, _BCD[i]))
-			return i + '0';
+	int bit_different[10] = { 0 };
+	for (int b = 127; b >= 109; b--)
+	{
+		bool bval = this->getBit(b);
+		for (int i = 0; i < 10; i++)
+		{
+			if (bit_different[i] != 0 || bval != _BCD[i].getBit(b))
+			{
+				bit_different[i]++;
+			}
+		}
+	}
+
+	int id = 0;
+	int min = 20;
+	for (int k = 0; k < 10; k++)
+	{
+		if (min > bit_different[k]) { min = bit_different[k]; id = k; }
+	}
+
+	return id + '0';
 	return '?';
 }
 
-std::string print_from_integral_part(Qfloat &src, int &exponent)
+std::string print_from_integral_part(Qfloat& src, int& exponent)
 {
 	// exponent = 0;
 	Qfloat digit_extracted;	// in form of 0.x
@@ -210,12 +281,15 @@ std::string print_from_integral_part(Qfloat &src, int &exponent)
 		integral_with_1_digit_after_point.modf(src, digit_extracted);
 		if (isZero(digit_extracted))
 			exponent++;
-		else break;
+		else
+		{
+			break;
+		}
 	}
 	while (true) {
 		digit_extracted = digit_extracted * _10; // 0.3 -> 3
 		result = digit_extracted.toChar() + result;
-		if (isZero(src) /*|| result.length() > 33*/) 
+		if (isZero(src) /*|| result.length() > 33*/)
 			break;
 		Qfloat integral_with_1_digit_after_point = src / _10;
 		integral_with_1_digit_after_point.modf(src, digit_extracted);
@@ -223,7 +297,7 @@ std::string print_from_integral_part(Qfloat &src, int &exponent)
 	return result;
 }
 
-std::string print_from_fractional_part(Qfloat &src, int &exponent)
+std::string print_from_fractional_part(Qfloat& src, int& exponent)
 {
 	// exponent = -1;
 	Qfloat digit_extracted;	// in form of x
@@ -310,6 +384,7 @@ std::string Qfloat::toDecString() const
 		result += "." + print_from_fractional_part(fractional, exponent);
 		while (exponent++ < -1)
 			result.insert(point_locate + 1, "0");
+		cut_off_unmeaningful_digits(result);
 
 		if (result.length() > 8)
 		{
@@ -331,10 +406,13 @@ std::string Qfloat::toBinString() const
 	return out;
 }
 
-void cut_off_meaningful_digits(std::string& str)
+void cut_off_unmeaningful_digits(std::string& str)
 {
 	if (str.length() > 33)
 		str.erase(33);
+	int i = str.length() - 1;
+	while (i >= 0 && str[i] == '0') { i--; }
+	str.erase(i + 1);
 }
 
 Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	// exponent if pass must > 0
@@ -353,7 +431,7 @@ Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	//
 	return result;
 }
 
-Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	// exponent if pass must < 0
+Qfloat calculate_from_fraction_part(const std::string& src, int exponent = 0)	// exponent if pass must < 0
 {
 	Qfloat result;
 	for (int i = src.length() - 1; i >= 0; i--)
@@ -368,7 +446,7 @@ Qfloat calculate_from_fraction_part(const std::string &src, int exponent = 0)	//
 	return result;
 }
 
-int locate_fix_point_based_on_exponent(std::string &str, int &exponent) // exponent >= 0
+int locate_fix_point_based_on_exponent(std::string& str, int& exponent) // exponent >= 0
 {
 	// 1.2345e0  --> 1.2345
 	// 1.2345e3  --> 1234.5
@@ -416,7 +494,7 @@ void Qfloat::fromDecString(std::string src)
 	if (exp_locate == -1)
 	{
 		// viet theo kieu bth => lay phan tri cat ngang 33 digits, roi tach phan nguyen va phan phay rieng de xu ly
-		cut_off_meaningful_digits(src);
+		cut_off_unmeaningful_digits(src);
 
 		if (src.back() == '.')				// 120.
 		{
@@ -460,7 +538,7 @@ void Qfloat::fromDecString(std::string src)
 			return;
 		}
 		src.erase(exp_locate);
-		cut_off_meaningful_digits(src);
+		cut_off_unmeaningful_digits(src);
 		if (exponent >= 0)
 		{
 			if (src.length() == 1)		// 2e678
@@ -801,7 +879,7 @@ Qfloat& Qfloat::operator=(const char* srcStr)
 	return *this = Qfloat(std::string(srcStr));
 }
 
-std::istream & operator>>(std::istream & istr, Qfloat & qf)
+std::istream& operator>>(std::istream& istr, Qfloat& qf)
 {
 	// TODO: insert return statement here
 	return istr;
@@ -999,7 +1077,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 		if (oprres[i + 1] != oprres[i]) { common_pattern_last_for = 0; }
 		else { common_pattern_last_for += 1; }
 	}
-	if (common_pattern_last_for >= 4) { oprres[i] = oprres[i + 1]; }
+	if (common_pattern_last_for >= 10) { oprres[i] = oprres[i + 1]; }
 	///////////
 	///overflow
 	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
@@ -1273,7 +1351,7 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 		if (oprres[i + 1] != oprres[i]) { common_pattern_last_for = 0; }
 		else { common_pattern_last_for += 1; }
 	}
-	if (common_pattern_last_for >= 4) { oprres[i] = oprres[i + 1]; }
+	if (common_pattern_last_for >= 10) { oprres[i] = oprres[i + 1]; }
 	//
 	int afterdecimal = 113;
 	if (oprres[114] == 0)

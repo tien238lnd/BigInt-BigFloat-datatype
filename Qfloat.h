@@ -24,7 +24,7 @@ public:
 	// use for output in binary representation
 
 	int get_exponent() const;
-	void modf(Qfloat &integral, Qfloat &fractional) const;
+	void modf(Qfloat& integral, Qfloat& fractional) const;
 	char toChar() const;
 
 	void fromDecString(std::string src);
@@ -70,3 +70,5 @@ public:
 
 
 };
+
+void cut_off_unmeaningful_digits(std::string& str);
