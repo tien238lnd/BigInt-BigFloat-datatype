@@ -412,7 +412,7 @@ std::string Qfloat::toDecString() const
 		result += "." + print_from_fractional_part(fractional, exponent);
 		while (exponent++ < -1)
 			result.insert(point_locate + 1, "0");
-		cut_off_unmeaningful_digits(result);
+		//cut_off_unmeaningful_digits(result);
 
 		if (result.length() > 8)
 		{
@@ -438,9 +438,9 @@ void cut_off_unmeaningful_digits(std::string& str)
 {
 	if (str.length() > 33)
 		str.erase(33);
-	int i = str.length() - 1;
-	while (i >= 0 && str[i] == '0') { i--; }
-	str.erase(i + 1);
+	//int i = str.length() - 1;
+	//while (i >= 0 && str[i] == '0') { i--; }
+	//str.erase(i + 1);
 }
 
 Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	// exponent if pass must > 0
