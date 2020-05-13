@@ -70,18 +70,15 @@ int CompareExponent(const Qfloat& x, const Qfloat& y) {
 
 int Qfloat::get_exponent() const // of 2, not 10
 {
-	std::string exp_str;
-	for (int i = 126; i > 111; i--)
-		exp_str += (this->getBit(i) + '0');
-	return std::stoi(exp_str, 0, 2) - 16383;
-	/*int x = 0;
-	for (int i = 126, int j = 0; i > 111; i--, j--)
-	{
-		bool b = this->getBit(i);
-		if (b == 1)
-			x = x & (1 >> j);
-	}
-	return x - 16383;*/
+	int res;
+	char* pres = (char*)&res;
+
+	*pres = this->bytes[14];
+	pres += 1;
+	*pres = this->bytes[15];
+	res &= !(1 << 15);
+	
+	res = res - Qfloat::BIAS;
 }
 
 char CheckTypeofQfloat(const Qfloat& q) {
