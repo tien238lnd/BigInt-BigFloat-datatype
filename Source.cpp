@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	//}
 
 	
-	Qfloat x = "123456789e4000";
+	Qfloat x = "-123.123e-3";
 	cout << x << endl;
 	/*double a = 9876543e301;
 	double b = 10;

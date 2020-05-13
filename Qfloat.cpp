@@ -238,16 +238,16 @@ bool isZero(const Qfloat& a)
 	return true;
 }
 
-bool almost_equal(const Qfloat& a, const Qfloat& b)	// dùng để nhận diện các chữ số trong bảng BCD
-{
-	Qfloat c = a - b;
-	if (c.getBit(127) == 1) { c = "0b0" - c; }
-
-	for (int i = 5; i < 127; i++)	//  don't care about sign bit , vì trong bảng cũng có số 0. Chạy từ 5 là bỏ qua 5 bit cuối, kiểu như epsilon
-		if (c.getBit(i) != 0)
-			return false;
-	return true;
-}
+//bool almost_equal(const Qfloat& a, const Qfloat& b)	// dùng để nhận diện các chữ số trong bảng BCD
+//{
+//	Qfloat c = a - b;
+//	if (c.getBit(127) == 1) { c = "0b0" - c; }
+//
+//	for (int i = 5; i < 127; i++)	//  don't care about sign bit , vì trong bảng cũng có số 0. Chạy từ 5 là bỏ qua 5 bit cuối, kiểu như epsilon
+//		if (c.getBit(i) != 0)
+//			return false;
+//	return true;
+//}
 
 bool strict_equal(const Qfloat& a, const Qfloat& b)	// chỉ dùng để nhận diện +inf và -inf
 {
@@ -259,7 +259,7 @@ bool strict_equal(const Qfloat& a, const Qfloat& b)	// chỉ dùng để nhận 
 
 bool isNaN(const Qfloat& a)
 {
-	for (int i = 127; i >= 111; i--)
+	for (int i = 126; i >= 111; i--)
 		if (a.getBit(i) != 1)
 			return false;
 	return true;
@@ -293,7 +293,11 @@ char Qfloat::toChar() const
 	}
 
 	return id + '0';
-	return '?';
+	// return '?';
+	/*for (int i = 0; i < 10; i++)
+		if ((*this - _BCD[i]).get_exponent() < -2)
+			return i + '0';
+	return '?';*/
 }
 
 std::string print_from_integral_part(Qfloat& src, int& exponent)
@@ -325,7 +329,7 @@ std::string print_from_integral_part(Qfloat& src, int& exponent)
 	return result;
 }
 
-std::string print_from_fractional_part(Qfloat& src, int& exponent)
+std::string print_from_fractional_part(Qfloat& src, int& exponent, int digits_in_integral_part = 0)
 {
 	// exponent = -1;
 	Qfloat digit_extracted;	// in form of x
@@ -342,7 +346,7 @@ std::string print_from_fractional_part(Qfloat& src, int& exponent)
 	}
 	while (true) {
 		result = result + digit_extracted.toChar();
-		if (isZero(src) || result.length() > 32)
+		if (isZero(src) || result.length() > (32- digits_in_integral_part))
 			break;
 		Qfloat fractional_with_1_digit_before_point = src * _10;
 		fractional_with_1_digit_before_point.modf(digit_extracted, src);
@@ -408,13 +412,13 @@ std::string Qfloat::toDecString() const
 		result = print_from_integral_part(integral, exponent);
 		while (exponent-- > 0)
 			result += "0";
+
 		int point_locate = result.length();
-		result += "." + print_from_fractional_part(fractional, exponent);
+		result += "." + print_from_fractional_part(fractional, exponent, point_locate);
 		while (exponent++ < -1)
 			result.insert(point_locate + 1, "0");
-		//cut_off_unmeaningful_digits(result);
 
-		if (result.length() > 8)
+		if (point_locate > 6)
 		{
 			result.erase(point_locate, 1);
 			result.insert(1, ".");
@@ -434,61 +438,201 @@ std::string Qfloat::toBinString() const
 	return out;
 }
 
-void cut_off_unmeaningful_digits(std::string& str)
+//void cut_off_unmeaningful_digits(std::string& str)
+//{
+//	if (str.length() > 33)
+//		str.erase(33);
+//	//int i = str.length() - 1;
+//	//while (i >= 0 && str[i] == '0') { i--; }
+//	//str.erase(i + 1);
+//}
+//
+//Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	// exponent if pass must > 0
+//{
+//	// phải có bước kiểm tra tràn chưa để stop tại đó, ko cho chạy nữa
+//	Qfloat result;
+//	for (int i = 0; i < int(src.length()); i++)
+//	{
+//		result = result * _10 + _BCD[src[i] - '0'];
+//	}
+//	while (exponent-- > 0)
+//	{
+//		result = result * _10;
+//		/*if (CheckTypeofQfloat(result) == Qfloat::Infinity)	=> ko cần thiết, nó đã overflow rồi thì nó có chạy thêm một lúc nữa cũng ko sao
+//			break;*/											// chứ làm vậy nó làm chậm mấy case ko overflow
+//	}
+//
+//	return result;
+//}
+//
+//Qfloat calculate_from_fraction_part(const std::string& src, int exponent = 0)	// exponent if pass must < 0
+//{
+//	Qfloat result;
+//	for (int i = src.length() - 1; i >= 0; i--)
+//	{
+//			result = (result + _BCD[src[i] - '0']) / _10;
+//	}
+//	while (exponent++ < 0)
+//	{
+//		result = result / _10;
+//	}
+//	return result;
+//}
+//
+//int locate_fix_point_based_on_exponent(std::string& str, int& exponent) // exponent >= 0
+//{
+//	// 1.2345e0  --> 1.2345
+//	// 1.2345e3  --> 1234.5
+//	// 1.2345e10 --> 12345e6
+//	// 1.2345e4  --> 12345
+//	int point_locate = 1;
+//	while (exponent != 0 && point_locate != str.length() - 1)
+//	{
+//		exponent--;
+//		std::swap(str[point_locate], str[point_locate + 1]);
+//		point_locate++;
+//	}
+//	return point_locate;
+//}
+//
+//void Qfloat::fromDecString(std::string src)
+//{
+//	memset(bytes, 0, 16);
+//	// xử lý tràn trong này ntn?
+//	// các th tràn ở đây là gì? 
+//	// 1. mũ lớn hơn 16383*log(2,10) ~ 4931.7: thì overflow, nhưng nhỏ hơn chưa chắc đã ko tràn
+//	// 2. mũ nhỏ hơn -16495*log(2,10) ~ -4965.4: thì underflow
+//	// 3. meaningful digits nhiều hơn 33, thì làm tròn, cắt bớt
+//	// có vấn đề gì với denormalized number ở đây ko? chắc là ko, vì từ góc độ số hệ thập phân, làm sao biết được?
+//
+//
+//	// HARDCORE
+//
+//	// PREPROCESSING
+//	// B1: Sign
+//	bool sign = 0;
+//	if (src[0] == '-')
+//	{
+//		sign = 1;
+//		src.erase(0, 1);
+//	}
+//	// B2: Exponent
+//	int exp_locate = src.find('e');
+//	if (exp_locate == std::string::npos)
+//	{
+//		exp_locate = src.find('E');
+//		if (exp_locate == std::string::npos)
+//			exp_locate = -1;
+//	}
+//	if (exp_locate == -1)
+//	{
+//		// viet theo kieu bth => lay phan tri cat ngang 33 digits, roi tach phan nguyen va phan phay rieng de xu ly
+//		cut_off_unmeaningful_digits(src);
+//
+//		if (src.back() == '.')				// 120.
+//		{
+//			src.pop_back();
+//			*this = calculate_from_integral_part(src);
+//		}
+//		else if (src[0] == '.')				// .12
+//		{
+//			*this = calculate_from_fraction_part(src);
+//		}
+//		else
+//		{
+//			int point_locate = src.find('.');
+//			if (point_locate == std::string::npos)	// 120
+//			{
+//				*this = calculate_from_integral_part(src);
+//			}
+//			else									// 12.12
+//			{
+//				std::string integral_part = src.substr(0, point_locate);
+//				std::string fractional_part = src.substr(point_locate + 1);
+//				*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		// viet theo kieu khoa hoc => tach rieng phan tri va phan mu
+//		int exponent = std::stoi(src.substr(exp_locate + 1));
+//		if (exponent > 4932)
+//		{
+//			if (this->getBit(127) == 0)
+//				*this = _pINF;
+//			else
+//				*this = _nINF;
+//			return;
+//		}
+//		if (exponent < -4966)
+//		{
+//			*this = _0;
+//			return;
+//		}
+//		src.erase(exp_locate);
+//		cut_off_unmeaningful_digits(src);
+//		if (exponent >= 0)
+//		{
+//			if (src.length() == 1)		// 2e678
+//			{
+//				*this = calculate_from_integral_part(src, exponent);
+//			}
+//			else {							// 2.345e678 or 2.3456789e4
+//				int point_locate = locate_fix_point_based_on_exponent(src, exponent);
+//				if (point_locate == src.length() - 1)	// 2345.e675
+//				{
+//					src.pop_back();
+//					*this = calculate_from_integral_part(src, exponent);
+//				}
+//				else									// 23456.789
+//				{
+//					std::string integral_part = src.substr(0, point_locate);
+//					std::string fractional_part = src.substr(point_locate + 1);
+//					*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
+//				}
+//			}
+//		}
+//		else
+//		{
+//			src.erase(1, 1); exponent++;
+//			*this = calculate_from_fraction_part(src, exponent);
+//		}
+//	}
+//	this->setBit(127, sign);
+//	return;
+//}
+
+
+void round_overflow_digits(std::string& str)
 {
-	if (str.length() > 33)
-		str.erase(33);
-	//int i = str.length() - 1;
-	//while (i >= 0 && str[i] == '0') { i--; }
-	//str.erase(i + 1);
+	for (int i = 33; i < str.length(); i++)
+	{
+		if (str[i] != '.')
+			str[i] = '0';
+	}
 }
 
-Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	// exponent if pass must > 0
+Qfloat calculate_from_integral_part(const std::string& src)	// exponent if pass must > 0
 {
-	// phải có bước kiểm tra tràn chưa để stop tại đó, ko cho chạy nữa
 	Qfloat result;
 	for (int i = 0; i < int(src.length()); i++)
 	{
-		if (src[i] != '0')
-			result = result * _10 + _BCD[src[i] - '0'];
-		else
-			result = result * _10;
+		result = result * _10 + _BCD[src[i] - '0'];
 	}
-	while (exponent-- > 0)
-		result = result * _10;
 	return result;
 }
 
-Qfloat calculate_from_fraction_part(const std::string& src, int exponent = 0)	// exponent if pass must < 0
+Qfloat calculate_from_fraction_part(const std::string& src)	// exponent if pass must < 0
 {
 	Qfloat result;
 	for (int i = src.length() - 1; i >= 0; i--)
 	{
-		if (src[i] != '0')
-			result = (result + _BCD[src[i] - '0']) / _10;
-		else
-			result = result / _10;
+		result = (result + _BCD[src[i] - '0']) / _10;
 	}
-	while (exponent++ < 0)
-		result = result / _10;
 	return result;
 }
 
-int locate_fix_point_based_on_exponent(std::string& str, int& exponent) // exponent >= 0
-{
-	// 1.2345e0  --> 1.2345
-	// 1.2345e3  --> 1234.5
-	// 1.2345e10 --> 12345e6
-	// 1.2345e4  --> 12345
-	int point_locate = 1;
-	while (exponent != 0 && point_locate != str.length() - 1)
-	{
-		exponent--;
-		std::swap(str[point_locate], str[point_locate + 1]);
-		point_locate++;
-	}
-	return point_locate;
-}
 
 void Qfloat::fromDecString(std::string src)
 {
@@ -511,7 +655,7 @@ void Qfloat::fromDecString(std::string src)
 		sign = 1;
 		src.erase(0, 1);
 	}
-	// B2: Exponent
+	// B2: Find exponent
 	int exp_locate = src.find('e');
 	if (exp_locate == std::string::npos)
 	{
@@ -519,40 +663,11 @@ void Qfloat::fromDecString(std::string src)
 		if (exp_locate == std::string::npos)
 			exp_locate = -1;
 	}
-	if (exp_locate == -1)
+	int exponent = 0;
+	if (exp_locate != -1)	// extract exponent if exist
 	{
-		// viet theo kieu bth => lay phan tri cat ngang 33 digits, roi tach phan nguyen va phan phay rieng de xu ly
-		cut_off_unmeaningful_digits(src);
-
-		if (src.back() == '.')				// 120.
-		{
-			src.pop_back();
-			*this = calculate_from_integral_part(src);
-		}
-		else if (src[0] == '.')				// .12
-		{
-			*this = calculate_from_fraction_part(src);
-		}
-		else
-		{
-			int point_locate = src.find('.');
-			if (point_locate == std::string::npos)	// 120
-			{
-				*this = calculate_from_integral_part(src);
-			}
-			else									// 12.12
-			{
-				std::string integral_part = src.substr(0, point_locate);
-				std::string fractional_part = src.substr(point_locate + 1);
-				*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
-			}
-		}
-	}
-	else
-	{
-		// viet theo kieu khoa hoc => tach rieng phan tri va phan mu
-		int exponent = std::stoi(src.substr(exp_locate + 1));
-		if (exponent > 4931)
+		exponent = std::stoi(src.substr(exp_locate + 1));
+		if (exponent > 4932)
 		{
 			if (this->getBit(127) == 0)
 				*this = _pINF;
@@ -560,40 +675,41 @@ void Qfloat::fromDecString(std::string src)
 				*this = _nINF;
 			return;
 		}
-		if (exponent < -4965)
+		if (exponent < -4966)
 		{
 			*this = _0;
 			return;
 		}
 		src.erase(exp_locate);
-		cut_off_unmeaningful_digits(src);
-		if (exponent >= 0)
+	}
+
+	round_overflow_digits(src);
+
+	int point_locate = src.find('.');
+
+	std::string integral_part = src.substr(0, point_locate);
+	std::string fractional_part;
+	if (point_locate != std::string::npos)
+		fractional_part = src.substr(point_locate + 1);
+
+	*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
+
+	if (exponent > 0)
+	{
+		while (exponent-- > 0)
 		{
-			if (src.length() == 1)		// 2e678
-			{
-				*this = calculate_from_integral_part(src, exponent);
-			}
-			else {							// 2.345e678
-				int point_locate = locate_fix_point_based_on_exponent(src, exponent);
-				if (point_locate == src.length() - 1)
-				{
-					src.pop_back();
-					*this = calculate_from_integral_part(src, exponent);
-				}
-				else
-				{
-					std::string integral_part = src.substr(0, point_locate);
-					std::string fractional_part = src.substr(point_locate + 1);
-					*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
-				}
-			}
-		}
-		else
-		{
-			src.erase(1, 1); exponent++;
-			*this = calculate_from_fraction_part(src, exponent);
+			*this = *this * _10;
+	
 		}
 	}
+	else if (exponent < 0)
+	{
+		while (exponent++ < 0)
+		{
+			*this = *this / _10;
+		}
+	}
+
 	this->setBit(127, sign);
 	return;
 }

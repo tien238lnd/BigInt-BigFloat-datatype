@@ -77,5 +77,3 @@ public:
 
 
 };
-
-void cut_off_unmeaningful_digits(std::string& str);
