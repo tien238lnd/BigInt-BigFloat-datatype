@@ -77,3 +77,4 @@ public:
 
 
 };
+char CheckTypeofQfloat(const Qfloat& q);

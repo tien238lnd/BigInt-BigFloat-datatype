@@ -343,7 +343,7 @@ std::string print_from_fractional_part(Qfloat& src, int& exponent, int digits_in
 	}
 	while (true) {
 		result = result + digit_extracted.toChar();
-		if (isZero(src) || result.length() > (32- digits_in_integral_part))
+		if (isZero(src) || (int)result.length() > (32 - (digits_in_integral_part != 0)*(digits_in_integral_part - exponent - 1)))
 			break;
 		Qfloat fractional_with_1_digit_before_point = src * _10;
 		fractional_with_1_digit_before_point.modf(digit_extracted, src);
@@ -679,17 +679,21 @@ void Qfloat::fromDecString(std::string src)
 		}
 		src.erase(exp_locate);
 	}
+	if (exp_locate != -1 && src == "")
+		*this = _1;
+	else
+	{
+		round_overflow_digits(src);
 
-	round_overflow_digits(src);
+		int point_locate = src.find('.');
 
-	int point_locate = src.find('.');
+		std::string integral_part = src.substr(0, point_locate);
+		std::string fractional_part;
+		if (point_locate != std::string::npos)
+			fractional_part = src.substr(point_locate + 1);
 
-	std::string integral_part = src.substr(0, point_locate);
-	std::string fractional_part;
-	if (point_locate != std::string::npos)
-		fractional_part = src.substr(point_locate + 1);
-
-	*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
+		*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
+	}
 
 	if (exponent > 0)
 	{
