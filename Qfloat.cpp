@@ -70,15 +70,17 @@ int CompareExponent(const Qfloat& x, const Qfloat& y) {
 
 int Qfloat::get_exponent() const // of 2, not 10
 {
-	int res;
+	int res = 0;
 	char* pres = (char*)&res;
-
 	*pres = this->bytes[14];
 	pres += 1;
 	*pres = this->bytes[15];
-	res &= !(1 << 15);
-	
+
+	res &= ~(1 << 15);
+
 	res = res - Qfloat::BIAS;
+	return res;
+
 }
 
 char CheckTypeofQfloat(const Qfloat& q) {
