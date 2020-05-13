@@ -171,7 +171,7 @@ void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 			}
 			
 			//found pattern
-			int num_type_of_pattern = (save_o >= 3)* save_o / 3;
+			int num_type_of_pattern = (save_o >= 4)* save_o / 4;
 			int* pattern_have_i_bit = new int[num_type_of_pattern + 1];
 			for (int i = 1; i <= num_type_of_pattern; i++) { pattern_have_i_bit[i] = 0; }
 
@@ -193,27 +193,25 @@ void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 				}
 			}
 
-			int max_pattern = -1;
-			int max_weight_pattern = 0;
-			for (int i = 1; i <= num_type_of_pattern; i++)
+			int i = num_type_of_pattern;
+			for (; i>=1; i--)
 			{
-				if (pattern_have_i_bit[i] * (i / 2 + 1) > max_weight_pattern)
+				if (pattern_have_i_bit[i] >= 2)
 				{
-					max_weight_pattern = pattern_have_i_bit[i] * (i / 2 + 1);
-					max_pattern = i;
+					break;
 				}
 			}
 
 			//if found pattern
-			if (max_pattern != -1)
+			if (i != 0)
 			{
-				int id = max_pattern - 1;
+				int id = i - 1;
 				while (f >= 0)
 				{
 					fractional.setBit(f, this->getBit(id));
 					id--;
 					f--;
-					if (id < 0) { id = max_pattern - 1; }
+					if (id < 0) { id = i - 1; }
 				}
 			}
 			delete[]pattern_have_i_bit;
