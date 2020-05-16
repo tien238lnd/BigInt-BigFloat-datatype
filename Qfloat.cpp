@@ -603,7 +603,11 @@ std::string Qfloat::toBinString() const
 
 void round_overflow_digits(std::string& str)
 {
-	for (int i = 33; i < str.length(); i++)
+	int i = 0;
+	while (str[i] == '0' || str[i] == '.')
+		i++;
+	i += 33;
+	for (; i < str.length(); i++)
 	{
 		if (str[i] != '.')
 			str[i] = '0';
