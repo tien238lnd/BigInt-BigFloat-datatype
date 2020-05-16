@@ -530,7 +530,8 @@ QInt lineparseQIntGui(std::string line)
 		firstStr += line[i];
 		i++;
 	}
-	while (line[i] == ' ') { i++; }
+	while (i<linelength && line[i] == ' ') { i++; }
+	if (i >= linelength) { return QInt("0"); }
 
 	//first operand or the number to convert or ~ operator
 	do
@@ -656,7 +657,8 @@ Qfloat lineparseQfloatGui(std::string line)
 		firstStr += line[i];
 		i++;
 	}
-	while (line[i] == ' ') { i++; }
+	while (i<linelength && line[i] == ' ') { i++; }
+	if (i >= linelength) { return Qfloat("0"); }
 
 	//first operand or number to convert
 	do
