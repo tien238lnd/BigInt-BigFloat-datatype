@@ -8,6 +8,8 @@ using namespace std;
 
 std::string lineparseQInt(std::string line);
 std::string lineparseQfloat(std::string line);
+QInt lineparseQIntGui(std::string line);
+Qfloat lineparseQfloatGui(std::string line);
 QInt calculate(QInt& operand1, QInt& operand2, string& operatoro);
 Qfloat calculate(Qfloat& operand1, Qfloat& operand2, string& operatoro);
 
@@ -406,6 +408,233 @@ std::string lineparseQInt(std::string line)
 	else {
 		return qiResult.DectoHex();
 	}
+}
+
+QInt lineparseQIntGui(std::string line)
+{
+	std::string firstStr;
+	std::string secondStr;
+	std::string thirdStr;
+	std::string fourthStr;
+	int linelength = line.length();
+	int i = 0;
+
+	////////////////////
+	//parse
+	////////////////////
+	//base
+	while (line[i] != ' ')
+	{
+		firstStr += line[i];
+		i++;
+	}
+	while (line[i] == ' ') { i++; }
+
+	//first operand or the number to convert or ~ operator
+	do
+	{
+		secondStr += line[i];
+		i++;
+	} while ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+
+	while (i < linelength && line[i] == ' ') { i++; }
+
+	bool third_is_operator = false;
+	//operator or the number to convert
+	if (secondStr[0] == '~')
+	{
+		do
+		{
+			thirdStr += line[i];
+			i++;
+		} while (i < linelength && ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+
+	}
+	else if(i < linelength)
+	{
+		thirdStr += line[i];
+		i++;
+
+		if (i >= linelength)
+		{//do nothing, just use to pass the following branches if face this case
+		}
+		//third string is a number
+		else if ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
+		{
+			do
+			{
+				thirdStr += line[i];
+				i++;
+			} while (i < linelength && ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+		}
+		else //third string is a operator
+		{
+			third_is_operator = true;
+			while (i < linelength && line[i] != ' ')
+			{
+				thirdStr += line[i];
+				i++;
+			}
+		}
+	}
+
+	while (i < linelength && line[i] == ' ') { i++; }
+	//may or may not be the second operand
+	if (third_is_operator)
+	{
+		while (i < linelength && ((line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')))
+		{
+			fourthStr += line[i];
+			i++;
+		} 
+	}
+
+	////////////////////
+	//process
+	////////////////////
+	int firstbase = stoi(firstStr);
+	int resultbase = firstbase;
+	QInt qiResult;
+
+	if (secondStr[0] == '~')//operator not
+	{
+		if (resultbase == 2) { thirdStr = "0b" + thirdStr; }
+		else if (resultbase == 16) { thirdStr = "0x" + thirdStr; }
+
+		qiResult = thirdStr;
+		qiResult = ~qiResult;
+	}
+	else if (third_is_operator)//calculate
+	{
+		if (fourthStr.length() == 0) { fourthStr += '0'; }
+		if (resultbase == 2)
+		{
+			secondStr = "0b" + secondStr;
+			fourthStr = "0b" + fourthStr;
+		}
+		else if (resultbase == 16)
+		{
+			secondStr = "0x" + secondStr;
+			fourthStr = "0x" + fourthStr;
+		}
+
+		QInt operand1(secondStr);
+		QInt operand2(fourthStr);
+
+		qiResult = calculate(operand1, operand2, thirdStr);
+
+	}
+	else//convert between bases
+	{
+		if (firstbase == 2) { secondStr = "0b" + secondStr; }
+		else if (firstbase == 16) { secondStr = "0x" + secondStr; }
+
+		qiResult = secondStr;
+	}
+
+	return qiResult;
+}
+
+Qfloat lineparseQfloatGui(std::string line)
+{
+
+	std::string firstStr;
+	std::string secondStr;
+	std::string thirdStr;
+	std::string fourthStr;
+	int linelength = line.length();
+	int i = 0;
+
+	////////////////////
+	//parse
+	////////////////////
+	//base
+	while (line[i] != ' ')
+	{
+		firstStr += line[i];
+		i++;
+	}
+	while (line[i] == ' ') { i++; }
+
+	//first operand or number to convert
+	do
+	{
+		secondStr += line[i];
+		i++;
+	} while (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+
+	while (i<linelength && line[i] == ' ') { i++; }
+
+	bool third_is_operator = false;
+	//operator or null, so we must check to avoid error
+	if (i < linelength)
+	{
+		thirdStr += line[i];
+		i++;
+	}
+	
+	if (i >= linelength)
+	{//do nothing, just use to pass the following branches if face this case
+	}
+	//third string is a number
+	else if (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
+	{
+		do
+		{
+			thirdStr += line[i];
+			i++;
+		} while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+	}
+	else //third string is a operator
+	{
+		third_is_operator = true;
+		while (i < linelength && line[i] != ' ')
+		{
+			thirdStr += line[i];
+			i++;
+		}
+	}
+
+	while (i < linelength && line[i] == ' ') { i++; }
+	//may or may not be the second operand
+	if (third_is_operator)
+	{
+		while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')))
+		{
+			fourthStr += line[i];
+			i++;
+		}
+	}
+
+	////////////////////
+	//process
+	////////////////////
+	int firstbase = stoi(firstStr);
+	int resultbase = firstbase;
+	Qfloat qfResult;
+
+	if (third_is_operator)//calculate
+	{
+		if (fourthStr.length() == 0) { fourthStr += '0'; }
+		if (resultbase == 2)
+		{
+			secondStr = "0b" + secondStr;
+			fourthStr = "0b" + fourthStr;
+		}
+
+		Qfloat operand1(secondStr);
+		Qfloat operand2(fourthStr);
+
+		qfResult = calculate(operand1, operand2, thirdStr);
+	}
+	else//convert between bases
+	{
+		if (firstbase == 2) { secondStr = "0b" + secondStr; }
+
+		qfResult = secondStr;
+	}
+
+	return qfResult;
 }
 
 QInt calculate(QInt& operand1, QInt& operand2, string& operatoro)
