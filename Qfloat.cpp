@@ -1037,7 +1037,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 	Qfloat res = "0b0";
 	int und = Qfloat::NUMBITS - 16;
 	opr1.setBit(127, opr1.getBit(127) != opr2.getBit(127));
-	opr2.setBit(127, opr1.getBit(127);
+	opr2.setBit(127, opr1.getBit(127));
 
 	//if x==0
 	bool is_ = true;
@@ -1287,7 +1287,7 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 	Qfloat res = "0b0";
 	int und = Qfloat::NUMBITS - 16;
 	opr1.setBit(127, opr1.getBit(127) != opr2.getBit(127));
-	opr2.setBit(127, opr1.getBit(127);
+	opr2.setBit(127, opr1.getBit(127));
 
 	//if x==0
 	bool xis_0 = true;
