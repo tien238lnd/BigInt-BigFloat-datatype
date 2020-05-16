@@ -37,14 +37,11 @@ int main(int argc, char* argv[])
 	//	processQfloat(input, output);
 	//}
 
-	
-	Qfloat x = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011";
-	Qfloat z = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-	Qfloat y = "-1.29503502388760502218488779164551e4921";
-	Qfloat t = "0b01000000000010001000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000";
-	cout << t << endl;
-	//cout << (int)CheckTypeofQfloat(x) << endl;
-	/*double a = 9876543e301;
+	float g = 23e4;
+	cout << g << endl;
+	Qfloat x = "430000e5";
+	cout << x << endl;
+	double a = 9876543e301;
 	double b = 10;
 	double c = a*b;
 	double d = -9876543e301 * 10;
@@ -57,7 +54,7 @@ int main(int argc, char* argv[])
 	cout << "c + 0 = " << c + 0 << endl;
 	cout << "c - 9a = " << c - 9*a << endl;
 	cout << "d = " << d << endl;
-	cout << "c + d = " << c + d << endl;*/
+	cout << "c + d = " << c + d << endl;
 	/*Qfloat x = "0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 	Qfloat i, f;
 	x.modf(i, f);
@@ -79,138 +76,138 @@ int main(int argc, char* argv[])
 	//Qfloat q = q1 + q2;	// 3.75 => 11.11 => 1.111e1
 	//cout << q.toBinString();
 
-	//// Test 1
-	//x = "0b0100000000000101111011"; // 1.111011e6 => 1111011 => 123
-	//cout << x << endl;
-	//Qfloat y = "0b00111111111111101";	// 1.1e-1  => 0.11 => 0.75
-	//cout << y << endl;
-	//Qfloat z = x + y;	// 123.75 => 1111011.11 => 1.11101111e6 => 010000000000010111101111
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//z = x + y;	// 123.75 => 1111011.11 => 1.11101111e6 => 010000000000010 11101111
-	//cout << z << endl;
+	// Test 1
+	x = "0b0100000000000101111011"; // 1.111011e6 => 1111011 => 123
+	cout << x << endl;
+	Qfloat y = "0b00111111111111101";	// 1.1e-1  => 0.11 => 0.75
+	cout << y << endl;
+	Qfloat z = x + y;	// 123.75 => 1111011.11 => 1.11101111e6 => 010000000000010111101111
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	z = x + y;	// 123.75 => 1111011.11 => 1.11101111e6 => 010000000000010 11101111
+	cout << z << endl;
 
-	//// Test 2
-	//x = "0b1100000000000000101"; // -1.101e-1 => -3.25
-	////cout << x.toBinString() << endl;
-	//y = "0b0100000000000001101";	// 1.101e2  => 6.5
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 0 1000...0 101
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	// Test 2
+	x = "0b1100000000000000101"; // -1.101e-1 => -3.25
+	//cout << x.toBinString() << endl;
+	y = "0b0100000000000001101";	// 1.101e2  => 6.5
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 0 1000...0 101
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	////  Test 3
-	//x = "0b11000000000001100001001001"; // -1.0001001001e7 => -137.425
-	////cout << x.toBinString() << endl;
-	//y = "0b1100000000000000101011";	// -1.101011e1  => -2.34375
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 1 1000...0110 000110001111
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	//  Test 3
+	x = "0b11000000000001100001001001"; // -1.0001001001e7 => -137.425
+	//cout << x.toBinString() << endl;
+	y = "0b1100000000000000101011";	// -1.101011e1  => -2.34375
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 1 1000...0110 000110001111
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	////// Test 4
-	//x = "0b0000000000000000001010111"; // 0.169921875e-16382 , signficand 001010111
-	////cout << x.toBinString() << endl;
-	//y  = "0b0000000000000000010111011";	// 0.365234375e-16382  , signficand 010111011
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 100010010
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	//// Test 4
+	x = "0b0000000000000000001010111"; // 0.169921875e-16382 , signficand 001010111
+	//cout << x.toBinString() << endl;
+	y  = "0b0000000000000000010111011";	// 0.365234375e-16382  , signficand 010111011
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 100010010
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	//////// Test 5 2 so denormalize cung dau
-	//x = "0b1000000000000000001010111"; // 0.169921875e-16382 , signficand 001010111
-	////cout << x.toBinString() << endl;
-	//y = "0b1000000000000000010111011";	// 0.365234375e-16382  , signficand 010111011
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 100010010
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	////// Test 5 2 so denormalize cung dau
+	x = "0b1000000000000000001010111"; // 0.169921875e-16382 , signficand 001010111
+	//cout << x.toBinString() << endl;
+	y = "0b1000000000000000010111011";	// 0.365234375e-16382  , signficand 010111011
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 100010010
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	////  Test 6 2 so doi nhau
-	//x = "0b11000000000001100001001001"; // -1.0001001001e7 => -137.425
-	////cout << x.toBinString() << endl;
-	//y = "0b01000000000001100001001001";	// -1.101011e1  => 137.425
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 0
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	//  Test 6 2 so doi nhau
+	x = "0b11000000000001100001001001"; // -1.0001001001e7 => -137.425
+	//cout << x.toBinString() << endl;
+	y = "0b01000000000001100001001001";	// -1.101011e1  => 137.425
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 0
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	//// Test 7 , so rat lon voi so rat be 
-	//x = "0b110000010010101110"; // -1.1e300 
-	////cout << x.toBinString() << endl;
-	//y = "0b010000000000000001";	// 1.01e1
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 0
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	// Test 7 , so rat lon voi so rat be 
+	x = "0b110000010010101110"; // -1.1e300 
+	//cout << x.toBinString() << endl;
+	y = "0b010000000000000001";	// 1.01e1
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 0
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
+	cout << "test 7" << endl;
+	//////// Test 8 2 so denormalize trai dau
+	x = "0b1000000000000000010111"; // -0.359375e-16382 , signficand 001010111
+	//cout << x.toBinString() << endl;
+	y = "0b000000000000000001011001011";	// 0.3491210938e-16382  , signficand 010111011
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 10101
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	////////// Test 8 2 so denormalize trai dau
-	//x = "0b1000000000000000010111"; // -0.359375e-16382 , signficand 001010111
-	////cout << x.toBinString() << endl;
-	//y = "0b000000000000000001011001011";	// 0.3491210938e-16382  , signficand 010111011
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 10101
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	// Test 9 2 so normal cung dau, tuy nhienn sau khi cong thi phai thay doi mux
+	x = "0b0100000000000010011111"; // 1.011111e3 
+	//cout << x.toBinString() << endl;
+	y = "0b010000000000000111101";	//1.11101e2 
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 1.00111e4
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	//// Test 9 2 so normal cung dau, tuy nhienn sau khi cong thi phai thay doi mux
-	//x = "0b0100000000000010011111"; // 1.011111e3 
-	////cout << x.toBinString() << endl;
-	//y = "0b010000000000000111101";	//1.11101e2 
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 1.00111e4
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	// Test 10 2 so denormal cung dau, tuy nhienn sau khi cong thi phai thay doi mux -> ket qua la normal
+	x = "0b1000000000000000111110111"; // 0.169921875e-16382 , signficand 111110111
+	//cout << x.toBinString() << endl;
+	y = "0b1000000000000000110111011";	// 0.365234375e-16382  , signficand 110111011
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 1.11011 e4
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
+	cout << "test 11" << endl;
+	// Test 11 2 so normal trai dau, tuy nhienn sau khi cong thi phai thay doi mux , cu the la phai giam mu 
+	x = "0b01000000000000010111001"; // 1.0111001 e2 , signficand 111110111
+	//cout << x.toBinString() << endl;
+	y = "0b1100000000000001011111";	// -1.011111e2  , signficand 110111011
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 
+	std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
-	//// Test 10 2 so denormal cung dau, tuy nhienn sau khi cong thi phai thay doi mux -> ket qua la normal
-	//x = "0b1000000000000000111110111"; // 0.169921875e-16382 , signficand 111110111
-	////cout << x.toBinString() << endl;
-	//y = "0b1000000000000000110111011";	// 0.365234375e-16382  , signficand 110111011
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 1.11011 e4
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
-
-	//// Test 11 2 so normal trai dau, tuy nhienn sau khi cong thi phai thay doi mux , cu the la phai giam mu 
-	//x = "0b01000000000000010111001"; // 1.0111001 e2 , signficand 111110111
-	////cout << x.toBinString() << endl;
-	//y = "0b1100000000000001011111";	// -1.011111e2  , signficand 110111011
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 
-	//std::cout << "7654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
-
-	//// Test 12 so dac biet
-	//x = "0b0111111111111111101100"; // infini
-	////cout << x.toBinString() << endl;
-	//y = "0b0111111111111111101100";	// infini
-	////cout << y.toBinString() << endl;
-	//z = x + y;	// 
-	//std::cout << "7654321|987654321|987654321|987654321|98765	4321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
-	//cout << x << endl;
-	//cout << y << endl;
-	//cout << z << endl;
+	// Test 12 so dac biet
+	x = "0b0111111111111111101100"; // infini
+	//cout << x.toBinString() << endl;
+	y = "0b0111111111111111101100";	// infini
+	//cout << y.toBinString() << endl;
+	z = x + y;	// 
+	std::cout << "7654321|987654321|987654321|987654321|98765	4321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|987654321|" << std::endl;
+	cout << x << endl;
+	cout << y << endl;
+	cout << z << endl;
 
 	cout << "Done!" << endl;
 	return 0;
@@ -409,6 +406,111 @@ std::string lineparseQInt(std::string line)
 		return qiResult.DectoHex();
 	}
 }
+std::string lineparseQfloat(std::string line)
+{
+	std::string firstStr;
+	std::string secondStr;
+	std::string thirdStr;
+	std::string fourthStr;
+	int linelength = line.length();
+	int i = 0;
+
+	////////////////////
+	//parse
+	////////////////////
+	//base or the first base
+	while (line[i] != ' ')
+	{
+		firstStr += line[i];
+		i++;
+	}
+	while (line[i] == ' ') { i++; }
+
+	//first operand or second base
+	do
+	{
+		secondStr += line[i];
+		i++;
+	} while (line[i] == '.' || line[i]=='e' || line[i]== '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+
+	while (line[i] == ' ') { i++; }
+
+	bool third_is_operator = false;
+	//operator or the number to convert
+	thirdStr += line[i];
+	i++;
+
+	if (i >= linelength)
+	{//do nothing, just use to pass the following branches if face this case
+	}
+	//third string is a number
+	else if (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
+	{
+		do
+		{
+			thirdStr += line[i];
+			i++;
+		} while (i < linelength && (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+	}
+	else //third string is a operator
+	{
+		third_is_operator = true;
+		while (i < linelength && line[i] != ' ')
+		{
+			thirdStr += line[i];
+			i++;
+		}
+	}
+
+	while (i < linelength && line[i] == ' ') { i++; }
+	//may or may not be the second operand
+	if (third_is_operator)
+	{
+		do
+		{
+			fourthStr += line[i];
+			i++;
+		} while (i < linelength && (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+	}
+
+	////////////////////
+	//process
+	////////////////////
+	int firstbase = stoi(firstStr);
+	int resultbase = firstbase;
+	Qfloat qfResult;
+
+	if (third_is_operator)//calculate
+	{
+		if (resultbase == 2)
+		{
+			secondStr = "0b" + secondStr;
+			fourthStr = "0b" + fourthStr;
+		}
+
+		Qfloat operand1(secondStr);
+		Qfloat operand2(fourthStr);
+
+		qfResult = calculate(operand1, operand2, thirdStr);
+	}
+	else//convert between bases
+	{
+		resultbase = stoi(secondStr);
+		if (firstbase == 2) { thirdStr = "0b" + thirdStr; }
+
+		qfResult = thirdStr;
+	}
+
+	if (resultbase == 2)
+	{
+		return qfResult.toBinString();
+	}
+	else
+	{
+		return qfResult.toDecString();
+	}
+}
+
 
 QInt lineparseQIntGui(std::string line)
 {
@@ -561,7 +663,7 @@ Qfloat lineparseQfloatGui(std::string line)
 	{
 		secondStr += line[i];
 		i++;
-	} while (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
+	} while (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
 
 	while (i<linelength && line[i] == ' ') { i++; }
 
@@ -577,13 +679,13 @@ Qfloat lineparseQfloatGui(std::string line)
 	{//do nothing, just use to pass the following branches if face this case
 	}
 	//third string is a number
-	else if (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
+	else if (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
 	{
 		do
 		{
 			thirdStr += line[i];
 			i++;
-		} while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
+		} while (i < linelength && (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
 	}
 	else //third string is a operator
 	{
@@ -599,7 +701,7 @@ Qfloat lineparseQfloatGui(std::string line)
 	//may or may not be the second operand
 	if (third_is_operator)
 	{
-		while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')))
+		while (i < linelength && (line[i] == '.' || line[i] == 'e' || line[i] == '-' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')))
 		{
 			fourthStr += line[i];
 			i++;
@@ -694,111 +796,6 @@ QInt calculate(QInt& operand1, QInt& operand2, string& operatoro)
 		}
 	}
 	return "0";
-}
-
-std::string lineparseQfloat(std::string line)
-{
-	std::string firstStr;
-	std::string secondStr;
-	std::string thirdStr;
-	std::string fourthStr;
-	int linelength = line.length();
-	int i = 0;
-
-	////////////////////
-	//parse
-	////////////////////
-	//base or the first base
-	while (line[i] != ' ')
-	{
-		firstStr += line[i];
-		i++;
-	}
-	while (line[i] == ' ') { i++; }
-
-	//first operand or second base
-	do
-	{
-		secondStr += line[i];
-		i++;
-	} while (line[i]=='.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'));
-
-	while (line[i] == ' ') { i++; }
-
-	bool third_is_operator = false;
-	//operator or the number to convert
-	thirdStr += line[i];
-	i++;
-
-	if (i >= linelength)
-	{//do nothing, just use to pass the following branches if face this case
-	}
-	//third string is a number
-	else if (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f'))
-	{
-		do
-		{
-			thirdStr += line[i];
-			i++;
-		} while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
-	}
-	else //third string is a operator
-	{
-		third_is_operator = true;
-		while (i < linelength && line[i] != ' ')
-		{
-			thirdStr += line[i];
-			i++;
-		}
-	}
-
-	while (i < linelength && line[i] == ' ') { i++; }
-	//may or may not be the second operand
-	if (third_is_operator)
-	{
-		do
-		{
-			fourthStr += line[i];
-			i++;
-		} while (i < linelength && (line[i] == '.' || (line[i] >= '0' && line[i] <= '9') || (line[i] >= 'A' && line[i] <= 'F') || (line[i] >= 'a' && line[i] <= 'f')));
-	}
-
-	////////////////////
-	//process
-	////////////////////
-	int firstbase = stoi(firstStr);
-	int resultbase = firstbase;
-	Qfloat qfResult;
-
-	if (third_is_operator)//calculate
-	{
-		if (resultbase == 2)
-		{
-			secondStr = "0b" + secondStr;
-			fourthStr = "0b" + fourthStr;
-		}
-
-		Qfloat operand1(secondStr);
-		Qfloat operand2(fourthStr);
-
-		qfResult = calculate(operand1, operand2, thirdStr);
-	}
-	else//convert between bases
-	{
-		resultbase = stoi(secondStr);
-		if (firstbase == 2) { thirdStr = "0b" + thirdStr; }
-		
-		qfResult = thirdStr;
-	}
-
-	if (resultbase == 2)
-	{
-		return qfResult.toBinString();
-	}
-	else
-	{
-		return qfResult.toDecString();
-	}
 }
 
 
