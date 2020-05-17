@@ -36,9 +36,9 @@ public:
 
 	void fromDecString(std::string src);
 
-	void fromBinString(std::string src);	// easy
+	void fromBinString(std::string src);
 public:
-	std::string toBinString() const;	// easy
+	std::string toBinString() const;
 	//default constructor, value is Zero
 	Qfloat();
 

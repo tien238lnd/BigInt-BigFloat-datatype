@@ -719,28 +719,6 @@ void Qfloat::fromDecString(std::string src)
 	return;
 }
 
-
-bool Kiemtramubang0(const Qfloat& x) {
-	for (int i = 126; i >= 112; i--) {
-		if (x.getBit(i) == 1) { return false; }
-	}
-	return true;
-}
-
-bool Kiemtrabang0(const Qfloat& x) {
-	for (int i = 126; i >= 0; i--) {
-		if (x.getBit(i) == 1) { return false; }
-	}
-	return true;
-}
-
-bool IsInfinityOrNaN(const Qfloat& x) {
-	for (int i = 126; i >= 112; i--) {
-		if (x.getBit(i) != 1) { return false; }
-	}
-	return true;
-}
-
 Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 
 	char checkX = CheckTypeofQfloat(x);

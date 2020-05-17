@@ -390,18 +390,6 @@ std::ostream& operator<<(std::ostream& ostr, const QInt& qi)
 }
 
 
-//QInt operator+(int, const QInt& x)
-//{
-//	return x;
-//}
-//QInt operator-(int, const QInt& x)
-//{
-//	QInt res = x;
-//	res.convertTo2sComplement();
-//
-//	return res;
-//}
-
 QInt operator+(const QInt& x, const QInt& y) {
 	QInt kq;
 	bool nho = 0;
