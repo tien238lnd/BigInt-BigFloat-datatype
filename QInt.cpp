@@ -1,11 +1,11 @@
 ﻿#include "QInt.h"
 
+
 QInt::QInt()
 {
 	memset(bytes, 0, QInt::NUMBYTES);
 }
-
-QInt::QInt(const QInt& src)
+QInt::QInt(const QInt& src):QInt()
 {
 	for (int i = 0; i < QInt::NUMBITS; i++)
 	{
@@ -143,6 +143,15 @@ void QInt::convertTo2sComplement()
 
 }
 
+bool QInt::isZero()const
+{
+	for (int i = 0; i < QInt::NUMBITS; i++)
+	{
+		if (getBit(i) != 0) { return false; }
+	}
+
+	return true;
+}
 
 std::string QInt::DectoBin() const	// QInt to "101010" string, use for output function
 {
@@ -220,8 +229,20 @@ std::string QInt::DecToDecString()const
 		qiCopy.convertTo2sComplement();
 	}
 
+	QInt base_2[11] = { "0b0000", "0b0001","0b0010","0b0011","0b0100","0b0101","0b0110","0b0111","0b1000","0b1001", "0b1010" };
+	QInt b10("1010");
+	std::string res;
 
-	DecString decsrc;
+	int remainder = 0;
+	while (!qiCopy.isZero())
+	{
+		remainder = GetRemainder(qiCopy, b10);
+		qiCopy = qiCopy / b10;
+		char digit = remainder + '0';
+		res = digit + res;
+	}
+
+	/*DecString decsrc;
 
 	while (qiCopy.getBit(i) == 0) { i--; }
 
@@ -234,16 +255,11 @@ std::string QInt::DecToDecString()const
 		}
 
 		i--;
-	}
+	}*/
 
-	std::string res;
 	if (isNegative)
 	{
-		res = '-' + decsrc.getString();
-	}
-	else
-	{
-		res = decsrc.getString();
+		res = '-' + res;
 	}
 
 	return res;
@@ -251,7 +267,7 @@ std::string QInt::DecToDecString()const
 
 void QInt::BintoDec(std::string inBinStr)			//just use to convert a binary string "1010110100" to QInt
 {
-	char lastIndex = char(inBinStr.length() - 1);
+	int lastIndex = int(inBinStr.length() - 1);
 
 	for (int i = 0; i < QInt::NUMBITS; i++)
 	{
@@ -270,7 +286,7 @@ void QInt::BintoDec(std::string inBinStr)			//just use to convert a binary strin
 
 void QInt::HextoDec(std::string inHexStr)
 {
-	char lastIndex = char(inHexStr.length() - 1);
+	int lastIndex = int(inHexStr.length() - 1);
 
 	for (int i = 0; i < QInt::NUMBITS; i += 4)
 	{
@@ -329,7 +345,7 @@ void QInt::DecStringToDec(std::string inDecStr)
 		i++;
 	}*/
 
-	//convert second method, use bcd
+	//convert second method
 	for (int i = 0; i < QInt::NUMBITS; i++)
 	{
 		this->setBit(i, 0);
@@ -341,6 +357,7 @@ void QInt::DecStringToDec(std::string inDecStr)
 
 	for (int i = inDecStr.length() - 1; i >= 0; i--)
 	{
+		if (inDecStr[i] < '0' || inDecStr[i]>'9') { break; }
 		*this = *this + b * base_2[inDecStr[i] - '0'];
 		b = b * base_2[10];
 	}
@@ -388,7 +405,6 @@ std::ostream& operator<<(std::ostream& ostr, const QInt& qi)
 
 	return ostr;
 }
-
 
 QInt operator+(const QInt& x, const QInt& y) {
 	QInt kq;
@@ -441,6 +457,92 @@ QInt operator-(const QInt& x, const QInt& y) {
 }
 
 
+int GetRemainder(const QInt& x, const QInt& y) {
+	QInt sobichia = x;
+	QInt sochia = y;
+	int ans = 0;
+
+	//neu co so am -> chuyen ve so khong am
+	bool dau1 = sobichia.getBit(127);
+	bool dau2 = sochia.getBit(127);
+	if (dau1) {
+		sobichia.convertTo2sComplement();
+	}
+	if (dau2)
+	{
+		sochia.convertTo2sComplement();
+	}
+
+
+	// Danh dau do dai cua 2 so chia va bi chia
+	//vd : mark = 5 -> car so chia va so bi chia co do dai la 6 bits
+	int mark;
+
+	// vua xet xem so bi chia co lon hon so chia khong ? vua xet do dai
+	for (int i = 127; i >= 0; i--)
+	{
+		bool a = sobichia.getBit(i);
+		bool b = sochia.getBit(i);
+
+		// Neu nhu so bi chia be hon so chia
+		if (a == 0 && b == 1)
+		{
+			return sobichia.castToInt();
+		}
+		else if (a == 1) {
+			mark = i;
+			break;
+		}
+	}
+
+	// mark se co dang sochia00000 (so luong bit 0 o phia sau bang so bit cua sobichia)
+	QInt mask = sochia;
+	mask = mask << (mark + 1);
+
+	// dung de lap
+	int count = mark;
+	for (int i = count; i >= 0; i--)
+	{
+		sobichia = sobichia << 1;
+		bool behon = false;
+
+		for (int k = 2 * mark + 1; k >= mark + 1; k--)
+		{
+			if (sobichia.getBit(k) < mask.getBit(k)) {
+				behon = true;
+				break;
+			}
+
+			if (sobichia.getBit(k) > mask.getBit(k)) {
+				break;
+			}
+		}
+
+		// kiem tra xem kq co am khong
+		if (behon)
+		{
+			sobichia.setBit(0, 0);
+
+		}
+		else
+		{
+			sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
+			sobichia.setBit(0, 1);
+		}
+	}
+
+
+	int Pow2 = 1;
+	for (int i = mark + 1; i <= 2 * mark + 1; i++)
+	{
+		ans += sobichia.getBit(i) * Pow2;
+		Pow2 = Pow2 * 2;
+	}
+
+	return ans;
+
+}
+
 void QInt::Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi) {
 	bool nho = 0;
 	for (int i = dau; i <= duoi; i++)
@@ -461,6 +563,7 @@ void QInt::Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi) {
 		}
 	}
 }
+
 void QInt::Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi) {
 	bool nho = 0;
 	for (int i = dau; i <= duoi; i++)
@@ -493,9 +596,9 @@ QInt operator*(const QInt& x, const QInt& y) {
 	bool dauq1 = x.getBit(127);
 	bool dauq2 = y.getBit(127);
 	// so bit cua multifier sau khi chuan hoa
-	unsigned int count = 0;
+	int count = 0;
 	// so bit cua multican sau khi chuan hoa
-	unsigned int count2 = 0;
+	int count2 = 0;
 	QInt A;
 
 	//chuan hoa so kq (boi vi dang truoc co the toan la so 1 hoac 0)
@@ -531,7 +634,7 @@ QInt operator*(const QInt& x, const QInt& y) {
 	for (int i = 0; i < count; i++)
 	{
 		if (q_1 == 0 && kq.getBit(0) == 1) {
-			A.Trutrongkhoang(A, M, 0, count2 -1);
+			A.Trutrongkhoang(A, M, 0, count2 - 1);
 		}
 		else if (q_1 == 1 && kq.getBit(0) == 0)
 		{
@@ -540,18 +643,16 @@ QInt operator*(const QInt& x, const QInt& y) {
 
 		q_1 = kq.getBit(0);
 		kq = kq >> 1;
-		kq.setBit(count - 1,A.getBit(0));
+		kq.setBit(count - 1, A.getBit(0));
 		//temp de luu bit dau cua A
 		bool temp = A.getBit(count2 - 1);
 		A = A >> 1;
 		A.setBit(count2 - 1, temp);
 	}
 
-	for (int i =  0 ; i <= count2 - 1 ; i++)
+	for (int i = 0; i <= count2 - 1; i++)
 	{
-		if ((i + count) < 128) {
-			kq.setBit(i + count, A.getBit(i));
-		}
+		kq.setBit(i + count, A.getBit(i));
 	}
 
 	// tien hanh set lai ket qua
@@ -568,7 +669,6 @@ QInt operator*(const QInt& x, const QInt& y) {
 }
 
 QInt operator/(const QInt& x, const QInt& y) {
-
 	QInt sobichia = x;
 	QInt sochia = y;
 
@@ -800,8 +900,7 @@ QInt operator<<(const QInt & x, int k)	// cài đặt bên trong là >> - right 
 	if (k == 0)
 		return x;
 	QInt ans;
-	ans.setBit(QInt::NUMBITS - 1, x.getBit(QInt::NUMBITS - 1));
-	for (int i = QInt::NUMBITS - 2; i >= k; i--)
+	for (int i = QInt::NUMBITS - 1; i >= k; i--)
 		ans.setBit(i, x.getBit(i - k));
 	for (int i = k - 1; i >= 0; i--)
 		ans.setBit(i, 0);
@@ -835,88 +934,3 @@ QInt ror(const QInt & x, int k)	// cài đặt bên trong là xoay trái
 }
 
 
-int GetRemainder(const QInt& x, const QInt& y) {
-	QInt sobichia = x;
-	QInt sochia = y;
-	int ans = 0;
-
-	//neu co so am -> chuyen ve so khong am
-	bool dau1 = sobichia.getBit(127);
-	bool dau2 = sochia.getBit(127);
-	if (dau1) {
-		sobichia.convertTo2sComplement();
-	}
-	if (dau2)
-	{
-		sochia.convertTo2sComplement();
-	}
-
-
-	// Danh dau do dai cua 2 so chia va bi chia
-	//vd : mark = 5 -> car so chia va so bi chia co do dai la 6 bits
-	int mark;
-
-	// vua xet xem so bi chia co lon hon so chia khong ? vua xet do dai
-	for (int i = 127; i >= 0; i--)
-	{
-		bool a = sobichia.getBit(i);
-		bool b = sochia.getBit(i);
-
-		// Neu nhu so bi chia be hon so chia
-		if (a == 0 && b == 1)
-		{
-			return sobichia.castToInt() ;
-		}
-		else if (a == 1) {
-			mark = i;
-			break;
-		}
-	}
-
-	// mark se co dang sochia00000 (so luong bit 0 o phia sau bang so bit cua sobichia)
-	QInt mask = sochia;
-	mask = mask << (mark + 1);
-
-	// dung de lap
-	int count = mark;
-	for (int i = count; i >= 0; i--)
-	{
-		sobichia = sobichia << 1;
-		bool behon = false;
-
-		for (int k = 2 * mark + 1; k >= mark + 1; k--)
-		{
-			if (sobichia.getBit(k) < mask.getBit(k)) {
-				behon = true;
-				break;
-			}
-
-			if (sobichia.getBit(k) > mask.getBit(k)) {
-				break;
-			}
-		}
-
-		// kiem tra xem kq co am khong
-		if (behon)
-		{
-			sobichia.setBit(0, 0);
-
-		}
-		else
-		{
-			sobichia.Trutrongkhoang(sobichia, mask, mark + 1, mark + mark + 1);
-			sobichia.setBit(0, 1);
-		}
-	}
-
-
-	int Pow2 = 1;
-	for (int i = mark + 1; i <= 2*mark + 1; i++)
-	{
-		ans += sobichia.getBit(i) * Pow2;
-		Pow2 = Pow2 * 2;
-	}
-
-	return ans;
-
-}

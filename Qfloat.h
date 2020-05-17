@@ -17,28 +17,35 @@ public:
 	static const char Denormalize = 3;
 	static const char Normal = 4;
 
-
 public:
-	//set the bit at position i the value b
+	//set the bit at position i the value b (0 or 1)
 	void setBit(char i, bool b);
 
-	//get the value of the bit at position i
+	//return the value of the bit at position i
 	bool getBit(char i) const;
 
 	// use for output in decimal representation
 	std::string toDecString() const;
 
 	// use for output in binary representation
+	std::string toBinString() const;
 
+	//return an int hold the value of the exponent of this Qfloat
 	int get_exponent() const;
+
+	//separate the integral part and fractional part
 	void modf(Qfloat& integral, Qfloat& fractional) const;
+	
+	//From a Qfloat that equal or nearly equal to a Qfloat between 0 to 9 (nearly equal because of tolerance of calculating)
+	//Return a char '0'->'9' corresponding to the input
 	char toChar() const;
 
+	//Convert from a string in base 10 to Qfloat
 	void fromDecString(std::string src);
+	//convert from a string in base 2 to Qfloat
+	void fromBinString(std::string src);	// easy
 
-	void fromBinString(std::string src);
 public:
-	std::string toBinString() const;
 	//default constructor, value is Zero
 	Qfloat();
 
@@ -56,8 +63,10 @@ public:
 	//assign operator
 	Qfloat& operator=(const Qfloat& src);
 
+	//assign to a string that perform Qfloat value
 	Qfloat& operator=(std::string srcStr);
 
+	//assign to a const char array that perform Qfloat value
 	Qfloat& operator=(const char* srcStr);
 
 	//input a Qfloat qi from istream istr
@@ -67,14 +76,12 @@ public:
 	friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf);
 
 	// ----------------------------------------------------------
-
 	friend Qfloat operator+(const Qfloat& x, const Qfloat& y);
 	friend Qfloat operator-(const Qfloat& x, const Qfloat& y);
 	friend Qfloat operator*(const Qfloat& x, const Qfloat& y);
 	friend Qfloat operator/(const Qfloat& x, const Qfloat& y);
 
-
-
-
 };
+//check if Qfloat q is zero, inf, nan, denormalize or normalize
+//return the type code that is above in the static const char variable
 char CheckTypeofQfloat(const Qfloat& q);
