@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "QInt.h"
-#include "Qfloat.h"
+#include "QFloat.h"
 
 using namespace std;
 
@@ -10,10 +10,10 @@ using namespace std;
 //return a string is the result of process that line
 std::string lineparseQInt(std::string line);
 
-//Qfloat input line
+//QFloat input line
 //input a line in correct format in command line
 //return a string is the result of process that line
-std::string lineparseQfloat(std::string line);
+std::string lineparseQFloat(std::string line);
 
 //QInt input in GUI
 //input a line in gui format
@@ -21,17 +21,17 @@ std::string lineparseQfloat(std::string line);
 //return the value QInt of input line
 QInt lineparseQIntGui(std::string line);
 
-//Qfloat input in GUI
+//QFloat input in GUI
 //input a line in gui format
 //have base of input in front, like "10" (mean 0 in base 10), or "10 5.0 + 6" or "2 1001.01101", or "10 -5e-8"
-//return the value Qfloat of input line
-Qfloat lineparseQfloatGui(std::string line);
+//return the value QFloat of input line
+QFloat lineparseQFloatGui(std::string line);
 
 //calculate expression: operand1 operatoro operand 2 (ex: 5 + 6, 2 >> 4, 5 rol 1...)
 QInt calculate(QInt& operand1, QInt& operand2, string& operatoro);
 
 //calculate expression: operand1 operatoro operand 2 (ex: 5.0 + 6e4)
-Qfloat calculate(Qfloat& operand1, Qfloat& operand2, string& operatoro);
+QFloat calculate(QFloat& operand1, QFloat& operand2, string& operatoro);
 
 //with every line in input file (which path is sinput)
 //process the line and print it to output file (which path is soutput)
@@ -39,7 +39,7 @@ void processQInt(std::string& sinput, std::string& soutput);
 
 //with every line in input file (which path is sinput)
 //process the line and print it to output file (which path is soutput)
-void processQfloat(std::string& sinput, std::string& soutput);
+void processQFloat(std::string& sinput, std::string& soutput);
 
 int main(int argc, char* argv[])
 {
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		processQfloat(input, output);
+		processQFloat(input, output);
 	}
 
 	cout << "Done!" << endl;
@@ -99,7 +99,7 @@ void processQInt(std::string& sinput, std::string& soutput)
 	output.close();
 }
 
-void processQfloat(std::string& sinput, std::string& soutput)
+void processQFloat(std::string& sinput, std::string& soutput)
 {
 	//open file
 	ifstream input(sinput);
@@ -121,14 +121,14 @@ void processQfloat(std::string& sinput, std::string& soutput)
 	//first line
 	if (getline(input, line) && line.length() != 0)
 	{
-		output << lineparseQfloat(line);
+		output << lineparseQFloat(line);
 	}
 	//process every line after
 	while (!input.eof())
 	{
 		if (getline(input, line) && line.length() != 0)
 		{
-			output << endl << lineparseQfloat(line);
+			output << endl << lineparseQFloat(line);
 		}
 	}
 
@@ -271,7 +271,7 @@ std::string lineparseQInt(std::string line)
 		return qiResult.DectoHex();
 	}
 }
-std::string lineparseQfloat(std::string line)
+std::string lineparseQFloat(std::string line)
 {
 	std::string firstStr;
 	std::string secondStr;
@@ -343,7 +343,7 @@ std::string lineparseQfloat(std::string line)
 	////////////////////
 	int firstbase = stoi(firstStr);
 	int resultbase = firstbase;
-	Qfloat qfResult;
+	QFloat qfResult;
 
 	if (third_is_operator)//calculate
 	{
@@ -353,8 +353,8 @@ std::string lineparseQfloat(std::string line)
 			fourthStr = "0b" + fourthStr;
 		}
 
-		Qfloat operand1(secondStr);
-		Qfloat operand2(fourthStr);
+		QFloat operand1(secondStr);
+		QFloat operand2(fourthStr);
 
 		qfResult = calculate(operand1, operand2, thirdStr);
 	}
@@ -523,7 +523,7 @@ QInt lineparseQIntGui(std::string line)
 	return qiResult;
 }
 
-Qfloat lineparseQfloatGui(std::string line)
+QFloat lineparseQFloatGui(std::string line)
 {
 	//preprocess line
 	int ik = 1;
@@ -561,7 +561,7 @@ Qfloat lineparseQfloatGui(std::string line)
 		i++;
 	}
 	while (i<linelength && line[i] == ' ') { i++; }
-	if (i >= linelength) { return Qfloat("0"); }
+	if (i >= linelength) { return QFloat("0"); }
 
 	//first operand or number to convert
 	do
@@ -618,7 +618,7 @@ Qfloat lineparseQfloatGui(std::string line)
 	////////////////////
 	int firstbase = stoi(firstStr);
 	int resultbase = firstbase;
-	Qfloat qfResult;
+	QFloat qfResult;
 
 	if (third_is_operator)//calculate
 	{
@@ -629,8 +629,8 @@ Qfloat lineparseQfloatGui(std::string line)
 			fourthStr = "0b" + fourthStr;
 		}
 
-		Qfloat operand1(secondStr);
-		Qfloat operand2(fourthStr);
+		QFloat operand1(secondStr);
+		QFloat operand2(fourthStr);
 
 		qfResult = calculate(operand1, operand2, thirdStr);
 	}
@@ -705,7 +705,7 @@ QInt calculate(QInt& operand1, QInt& operand2, string& operatoro)
 }
 
 
-Qfloat calculate(Qfloat& operand1, Qfloat& operand2, string& operatoro)
+QFloat calculate(QFloat& operand1, QFloat& operand2, string& operatoro)
 {
 	switch (operatoro[0])
 	{
