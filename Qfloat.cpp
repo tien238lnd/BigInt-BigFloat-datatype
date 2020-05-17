@@ -217,10 +217,35 @@ void QFloat::modf(QFloat& integral, QFloat& fractional) const
 
 char QFloat::toChar() const
 {
+	QFloat tcopy = *this;
+	//round up
+	int to_round = 111;
+	for (; to_round >= 0; to_round--)
+	{
+		if (tcopy.getBit(to_round) == 0) { break; }
+	}
+	if (to_round < 1)
+	{
+		for (int i = 0; i <= 111; i++) { tcopy.setBit(i, 0); }
+		//add 1 to exp
+		for (int i = 112; i <= 126; i++)
+		{
+			if (tcopy.getBit(i) == 1)
+			{
+				tcopy.setBit(i, 0);
+			}
+			else
+			{
+				tcopy.setBit(i, 1);
+				break;
+			}
+		}
+	}
+	//
 	int bit_different[10] = { 0 };
 	for (int b = 127; b >= 109; b--)
 	{
-		bool bval = this->getBit(b);
+		bool bval = tcopy.getBit(b);
 		for (int i = 0; i < 10; i++)
 		{
 			if (bit_different[i] != 0 || bval != _BCD[i].getBit(b))
