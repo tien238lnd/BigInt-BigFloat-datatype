@@ -57,7 +57,7 @@ public:
 	//convert to 2's complement of this number
 	void convertTo2sComplement();
 
-	//return true if this Qfloat is zero, otherwise return false
+	//return true if this QFloat is zero, otherwise return false
 	bool isZero()const;
 public:
 	//convert QInt to a string show Binary value
