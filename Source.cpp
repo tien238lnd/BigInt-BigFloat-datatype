@@ -1,5 +1,4 @@
 #include <iostream>
-#include <iomanip>
 #include <string>
 #include "QInt.h"
 #include "Qfloat.h"
@@ -66,9 +65,17 @@ void processQInt(std::string& sinput, std::string& soutput)
 {
 	//open file
 	ifstream input(sinput);
-	if (!input.is_open()) { return; }
+	if (!input.is_open()) 
+	{
+		cout << "Can't open input file" << endl;
+		return;
+	}
 	ofstream output(soutput);
-	if (!output.is_open()) { input.close(); return; }
+	if (!output.is_open())
+	{
+		cout << "Can't open output file" << endl;
+		input.close(); return;
+	}
 
 	std::string line;
 
@@ -96,9 +103,18 @@ void processQfloat(std::string& sinput, std::string& soutput)
 {
 	//open file
 	ifstream input(sinput);
-	if (!input.is_open()) { return; }
+	if (!input.is_open()) 
+	{
+		cout << "Can't open input file" << endl;
+		return;
+	}
 	ofstream output(soutput);
-	if (!output.is_open()) { input.close(); return; }
+	if (!output.is_open())
+	{
+		cout << "Can't open output file" << endl;
+		input.close();
+		return;
+	}
 
 	std::string line;
 
@@ -123,6 +139,19 @@ void processQfloat(std::string& sinput, std::string& soutput)
 
 std::string lineparseQInt(std::string line)
 {
+	//preprocess line
+	int ik = 1;
+	while (ik < int(line.length()))
+	{
+		if (strchr("+-*/&|^~", line[ik])!=nullptr && strchr("0123456789ABCDEF", line[ik-1]))
+		{
+			line.insert(ik, " ");
+			line.insert(ik + 2, " ");
+			ik += 3;
+		}
+		else ik++;
+	}
+
 	std::string firstStr;
 	std::string secondStr;
 	std::string thirdStr;
@@ -257,6 +286,19 @@ std::string lineparseQInt(std::string line)
 }
 std::string lineparseQfloat(std::string line)
 {
+	//preprocess line
+	int ik = 1;
+	while (ik < int(line.length()))
+	{
+		if (strchr("+-*/&|^~", line[ik]) != nullptr && strchr("0123456789ABCDEF", line[ik - 1]))
+		{
+			line.insert(ik, " ");
+			line.insert(ik + 2, " ");
+			ik += 3;
+		}
+		else ik++;
+	}
+
 	std::string firstStr;
 	std::string secondStr;
 	std::string thirdStr;
@@ -619,6 +661,7 @@ QInt calculate(QInt& operand1, QInt& operand2, string& operatoro)
 		case '*':
 			return operand1 * operand2;
 		case '/':
+			if(1==1){}
 			return operand1 / operand2;
 		case '&':
 			return operand1 & operand2;

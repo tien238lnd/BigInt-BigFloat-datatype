@@ -773,7 +773,7 @@ Qfloat::Qfloat()
 	memset(bytes, 0, 16);
 }
 
-Qfloat::Qfloat(const Qfloat& src)
+Qfloat::Qfloat(const Qfloat& src): Qfloat()
 {
 	for (int i = 0; i < 128; i++)
 	{
@@ -1023,7 +1023,7 @@ Qfloat operator*(const Qfloat& x, const Qfloat& y)
 	if (common_pattern_last_for >= 10) { oprres[i] = oprres[i + 1]; }
 	///////////
 	///overflow
-	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
+	if (exp1 > Qfloat::BIAS * 2)//overflow, raw exp >bias*2 mean exponent of opr1>bias
 	{
 		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{

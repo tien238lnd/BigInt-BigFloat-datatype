@@ -94,7 +94,7 @@ friend std::istream& operator>>(std::istream& istr, QInt& qi);
 friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
 
 
-	friend int GetRemainder(const QInt& x, const QInt& y);
+	friend QInt operator%(const QInt& x, const QInt& y);
 
 	//plus x and y only between bit 'dau' and bit 'duoi' ('dau'<'duoi')
 	static void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
@@ -105,6 +105,8 @@ friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
 	friend QInt operator-(const QInt &x, const QInt &y);
 	friend QInt operator*(const QInt &x, const QInt &y);
 	friend QInt operator/(const QInt &x, const QInt &y);
+	//QInt nhan(const QInt& other)const;
+	//QInt chia(const QInt& other)const;
 
 	friend bool operator==(const QInt &x, const QInt &y);
 	friend bool operator!=(const QInt &x, const QInt &y);
@@ -131,5 +133,6 @@ friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
 	friend QInt rol(const QInt &x, int k);
 	//rotate right the variable x k bit
 	friend QInt ror(const QInt &x, int k);
+
 };
 
