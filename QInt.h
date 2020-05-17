@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "DecString.h"
+
 
 class QInt
 {
@@ -10,8 +10,6 @@ class QInt
 	static const int NUMBITS = 128;
 	char bytes[NUMBYTES];
 public:
-
-	// Hiền
 
 	//default constructor, value is Zero
 	QInt();
@@ -44,9 +42,9 @@ public:
 
 	//cast int to QInt
 	QInt& operator=(const int& x);
-	//cast QInt to int
-	int castToInt();
 	
+	//cast QInt to int (in case Qint is over the capability of int it may cause lost of data)
+	int castToInt();
 public:
 	//set the bit at position i the value b
 	//i=0 associate with LSB
@@ -54,12 +52,13 @@ public:
 	void setBit(char i, bool b);
 
 	//get the value of the bit at position i
-	 bool getBit(char i) const;
+	bool getBit(char i) const;
 
-private:
 	//convert to 2's complement of this number
 	void convertTo2sComplement();
 
+	//return true if this Qfloat is zero, otherwise return false
+	bool isZero()const;
 public:
 	//convert QInt to a string show Binary value
 	//use for output in binary
@@ -88,55 +87,49 @@ public:
 	//use to convert binary string inBinStr to hexadecimal string outHexStr
 	friend void BinToHex(std::string inBinStr, std::string outHexStr);
 
-	static QInt QInt_MAX()
-	{
-		return QInt("0b01111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
-		// 170141183460469231731687303715884105727 ~ 1.7e38
-	}
+//input a QInt qi from istream istr
+friend std::istream& operator>>(std::istream& istr, QInt& qi);
 
-	static QInt QInt_MIN()
-	{
-		return QInt("0b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-		// -170141183460469231731687303715884105728 ~ -1.7e38
-	}
+//output a QInt qi to the ostream ostr
+friend std::ostream& operator<<(std::ostream& ostr, const QInt& qi);
+
 
 	friend int GetRemainder(const QInt& x, const QInt& y);
 
-//input a QInt qi from istream istr
-friend std::istream& operator>> (std::istream& istr, QInt& qi);
-
-//output a QInt qi to the ostream ostr
-friend std::ostream& operator<< (std::ostream& ostr,  QInt& qi);
-
-
+	//plus x and y only between bit 'dau' and bit 'duoi' ('dau'<'duoi')
 	static void Congtrongkhoang(QInt& x, QInt& y, int dau, int duoi);
+	//minus x and y only between bit 'dau' and bit 'duoi' ('dau'<'duoi')
 	static void Trutrongkhoang(QInt& x, QInt& y, int dau, int duoi);
 
-friend QInt operator+(const QInt &x, const QInt &y);
-friend QInt operator-(const QInt &x, const QInt &y);
-friend QInt operator*(const QInt &x, const QInt &y);
-friend QInt operator/(const QInt &x, const QInt &y);
+	friend QInt operator+(const QInt &x, const QInt &y);
+	friend QInt operator-(const QInt &x, const QInt &y);
+	friend QInt operator*(const QInt &x, const QInt &y);
+	friend QInt operator/(const QInt &x, const QInt &y);
 
-//++, --, (int)-QInt, (int)+QInt
+	friend bool operator==(const QInt &x, const QInt &y);
+	friend bool operator!=(const QInt &x, const QInt &y);
+	friend bool operator<(const QInt &x, const QInt &y);	
+	friend bool operator>(const QInt &x, const QInt &y);
+	friend bool operator<=(const QInt &x, const QInt &y);
+	friend bool operator>=(const QInt &x, const QInt &y);
 
-friend bool operator==(const QInt &x, const QInt &y);
-friend bool operator!=(const QInt &x, const QInt &y);
-friend bool operator<(const QInt &x, const QInt &y);	
-friend bool operator>(const QInt &x, const QInt &y);
-friend bool operator<=(const QInt &x, const QInt &y);
-friend bool operator>=(const QInt &x, const QInt &y);
+	//x & y
+	friend QInt operator&(const QInt &x, const QInt &y);
+	//x | y
+	friend QInt operator|(const QInt &x, const QInt &y);
+	//x ^ y
+	friend QInt operator^(const QInt &x, const QInt &y);
+	//~x
+	friend QInt operator~(const QInt &x);
 
-// Tiến
+	//shift left the variable x k bit
+	friend QInt operator>>(const QInt &x, int k);
+	//shift left the variable x k bit
+	friend QInt operator<<(const QInt &x, int k);
 
-friend QInt operator&(const QInt &x, const QInt &y);
-friend QInt operator|(const QInt &x, const QInt &y);
-friend QInt operator^(const QInt &x, const QInt &y);
-friend QInt operator~(const QInt &x);
-
-friend QInt operator>>(const QInt &x, int k);
-friend QInt operator<<(const QInt &x, int k);
-
-friend QInt rol(const QInt &x, int k);
-friend QInt ror(const QInt &x, int k);
+	//rotate left the variable x k bit
+	friend QInt rol(const QInt &x, int k);
+	//rotate right the variable x k bit
+	friend QInt ror(const QInt &x, int k);
 };
 

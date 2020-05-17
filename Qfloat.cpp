@@ -169,9 +169,9 @@ void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 			{
 				fractional.setBit(f, this->getBit(o));
 			}
-			
+
 			//found pattern
-			int num_type_of_pattern = (save_o >= 4)* save_o / 4;
+			int num_type_of_pattern = (save_o >= 4) * save_o / 4;
 			int* pattern_have_i_bit = new int[num_type_of_pattern + 1];
 			for (int i = 1; i <= num_type_of_pattern; i++) { pattern_have_i_bit[i] = 0; }
 
@@ -194,7 +194,7 @@ void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 			}
 
 			int i = num_type_of_pattern;
-			for (; i>=1; i--)
+			for (; i >= 1; i--)
 			{
 				if (pattern_have_i_bit[i] >= 2)
 				{
@@ -262,11 +262,6 @@ bool isNaN(const Qfloat& a)
 	return true;
 }
 
-//bool operator!=(const Qfloat &a, const Qfloat &b)
-//{
-//	return !(a == b);
-//}
-
 char Qfloat::toChar() const
 {
 	int bit_different[10] = { 0 };
@@ -291,10 +286,6 @@ char Qfloat::toChar() const
 
 	return id + '0';
 	// return '?';
-	/*for (int i = 0; i < 10; i++)
-		if ((*this - _BCD[i]).get_exponent() < -2)
-			return i + '0';
-	return '?';*/
 }
 
 std::string print_from_integral_part(Qfloat& src, int& exponent)
@@ -343,7 +334,7 @@ std::string print_from_fractional_part(Qfloat& src, int& exponent, int digits_in
 	}
 	while (true) {
 		result = result + digit_extracted.toChar();
-		if (isZero(src) || (int)result.length() > (32 - (digits_in_integral_part != 0)*(digits_in_integral_part - exponent - 1)))
+		if (isZero(src) || (int)result.length() > (32 - (digits_in_integral_part != 0) * (digits_in_integral_part - exponent - 1)))
 			break;
 		Qfloat fractional_with_1_digit_before_point = src * _10;
 		fractional_with_1_digit_before_point.modf(digit_extracted, src);
@@ -435,179 +426,13 @@ std::string Qfloat::toBinString() const
 	return out;
 }
 
-//void cut_off_unmeaningful_digits(std::string& str)
-//{
-//	if (str.length() > 33)
-//		str.erase(33);
-//	//int i = str.length() - 1;
-//	//while (i >= 0 && str[i] == '0') { i--; }
-//	//str.erase(i + 1);
-//}
-//
-//Qfloat calculate_from_integral_part(const std::string& src, int exponent = 0)	// exponent if pass must > 0
-//{
-//	// phải có bước kiểm tra tràn chưa để stop tại đó, ko cho chạy nữa
-//	Qfloat result;
-//	for (int i = 0; i < int(src.length()); i++)
-//	{
-//		result = result * _10 + _BCD[src[i] - '0'];
-//	}
-//	while (exponent-- > 0)
-//	{
-//		result = result * _10;
-//		/*if (CheckTypeofQfloat(result) == Qfloat::Infinity)	=> ko cần thiết, nó đã overflow rồi thì nó có chạy thêm một lúc nữa cũng ko sao
-//			break;*/											// chứ làm vậy nó làm chậm mấy case ko overflow
-//	}
-//
-//	return result;
-//}
-//
-//Qfloat calculate_from_fraction_part(const std::string& src, int exponent = 0)	// exponent if pass must < 0
-//{
-//	Qfloat result;
-//	for (int i = src.length() - 1; i >= 0; i--)
-//	{
-//			result = (result + _BCD[src[i] - '0']) / _10;
-//	}
-//	while (exponent++ < 0)
-//	{
-//		result = result / _10;
-//	}
-//	return result;
-//}
-//
-//int locate_fix_point_based_on_exponent(std::string& str, int& exponent) // exponent >= 0
-//{
-//	// 1.2345e0  --> 1.2345
-//	// 1.2345e3  --> 1234.5
-//	// 1.2345e10 --> 12345e6
-//	// 1.2345e4  --> 12345
-//	int point_locate = 1;
-//	while (exponent != 0 && point_locate != str.length() - 1)
-//	{
-//		exponent--;
-//		std::swap(str[point_locate], str[point_locate + 1]);
-//		point_locate++;
-//	}
-//	return point_locate;
-//}
-//
-//void Qfloat::fromDecString(std::string src)
-//{
-//	memset(bytes, 0, 16);
-//	// xử lý tràn trong này ntn?
-//	// các th tràn ở đây là gì? 
-//	// 1. mũ lớn hơn 16383*log(2,10) ~ 4931.7: thì overflow, nhưng nhỏ hơn chưa chắc đã ko tràn
-//	// 2. mũ nhỏ hơn -16495*log(2,10) ~ -4965.4: thì underflow
-//	// 3. meaningful digits nhiều hơn 33, thì làm tròn, cắt bớt
-//	// có vấn đề gì với denormalized number ở đây ko? chắc là ko, vì từ góc độ số hệ thập phân, làm sao biết được?
-//
-//
-//	// HARDCORE
-//
-//	// PREPROCESSING
-//	// B1: Sign
-//	bool sign = 0;
-//	if (src[0] == '-')
-//	{
-//		sign = 1;
-//		src.erase(0, 1);
-//	}
-//	// B2: Exponent
-//	int exp_locate = src.find('e');
-//	if (exp_locate == std::string::npos)
-//	{
-//		exp_locate = src.find('E');
-//		if (exp_locate == std::string::npos)
-//			exp_locate = -1;
-//	}
-//	if (exp_locate == -1)
-//	{
-//		// viet theo kieu bth => lay phan tri cat ngang 33 digits, roi tach phan nguyen va phan phay rieng de xu ly
-//		cut_off_unmeaningful_digits(src);
-//
-//		if (src.back() == '.')				// 120.
-//		{
-//			src.pop_back();
-//			*this = calculate_from_integral_part(src);
-//		}
-//		else if (src[0] == '.')				// .12
-//		{
-//			*this = calculate_from_fraction_part(src);
-//		}
-//		else
-//		{
-//			int point_locate = src.find('.');
-//			if (point_locate == std::string::npos)	// 120
-//			{
-//				*this = calculate_from_integral_part(src);
-//			}
-//			else									// 12.12
-//			{
-//				std::string integral_part = src.substr(0, point_locate);
-//				std::string fractional_part = src.substr(point_locate + 1);
-//				*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
-//			}
-//		}
-//	}
-//	else
-//	{
-//		// viet theo kieu khoa hoc => tach rieng phan tri va phan mu
-//		int exponent = std::stoi(src.substr(exp_locate + 1));
-//		if (exponent > 4932)
-//		{
-//			if (this->getBit(127) == 0)
-//				*this = _pINF;
-//			else
-//				*this = _nINF;
-//			return;
-//		}
-//		if (exponent < -4966)
-//		{
-//			*this = _0;
-//			return;
-//		}
-//		src.erase(exp_locate);
-//		cut_off_unmeaningful_digits(src);
-//		if (exponent >= 0)
-//		{
-//			if (src.length() == 1)		// 2e678
-//			{
-//				*this = calculate_from_integral_part(src, exponent);
-//			}
-//			else {							// 2.345e678 or 2.3456789e4
-//				int point_locate = locate_fix_point_based_on_exponent(src, exponent);
-//				if (point_locate == src.length() - 1)	// 2345.e675
-//				{
-//					src.pop_back();
-//					*this = calculate_from_integral_part(src, exponent);
-//				}
-//				else									// 23456.789
-//				{
-//					std::string integral_part = src.substr(0, point_locate);
-//					std::string fractional_part = src.substr(point_locate + 1);
-//					*this = calculate_from_integral_part(integral_part) + calculate_from_fraction_part(fractional_part);
-//				}
-//			}
-//		}
-//		else
-//		{
-//			src.erase(1, 1); exponent++;
-//			*this = calculate_from_fraction_part(src, exponent);
-//		}
-//	}
-//	this->setBit(127, sign);
-//	return;
-//}
-
-
 void round_overflow_digits(std::string& str)
 {
 	int i = 0;
 	while (str[i] == '0' || str[i] == '.')
 		i++;
 	i += 33;
-	for (; i < str.length(); i++)
+	for (; i < int(str.length()); i++)
 	{
 		if (str[i] != '.')
 			str[i] = '0';
@@ -704,7 +529,7 @@ void Qfloat::fromDecString(std::string src)
 		while (exponent-- > 0)
 		{
 			*this = *this * _10;
-	
+
 		}
 	}
 	else if (exponent < 0)
@@ -718,6 +543,7 @@ void Qfloat::fromDecString(std::string src)
 	this->setBit(127, sign);
 	return;
 }
+
 
 Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 
@@ -743,12 +569,13 @@ Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 		first.setBit(112, 1);
 		WeAreAdding2Denormalize = false;
 	}
-	else {first.setBit(112, 0);}
+	else { first.setBit(112, 0); }
 
 	if (checkY == Qfloat::Normal) {
 		second.setBit(112, 1);
-		WeAreAdding2Denormalize = false;}
-	else { second.setBit(112, 0);}
+		WeAreAdding2Denormalize = false;
+	}
+	else { second.setBit(112, 0); }
 
 	for (int i = 0; i <= 111; i++) {
 
@@ -1317,7 +1144,7 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 			if (opr2.getBit(i) == 1) { yis_ = 2; break; }
 		}
 	}
-		
+
 	if (xis_ == 2) { return opr1; }
 	else if (yis_ == 2) { return opr2; }
 	if (xis_0) { return res; }//0
@@ -1537,4 +1364,3 @@ Qfloat operator/(const Qfloat& x, const Qfloat& y)
 
 	return res;
 }
-
