@@ -652,7 +652,9 @@ QInt operator*(const QInt& x, const QInt& y) {
 
 	for (int i = 0; i <= count2 - 1; i++)
 	{
-		kq.setBit(i + count, A.getBit(i));
+		if ((i + count) < 128) {
+			kq.setBit(i + count, A.getBit(i));
+		}
 	}
 
 	// tien hanh set lai ket qua
@@ -887,7 +889,8 @@ QInt operator>>(const QInt & x, int k)	// cài đặt bên trong là << - left s
 	if (k == 0)
 		return x;
 	QInt ans;
-	for (int i = 0; i < QInt::NUMBITS - 1 - k; i++)
+	ans.setBit(QInt::NUMBITS - 1, x.getBit(QInt::NUMBITS - 1));
+	for (int i = QInt::NUMBITS - 2; i >= k; i--)
 		ans.setBit(i, x.getBit(i + k));
 	for (int i = QInt::NUMBITS - 1 - k; i < QInt::NUMBITS; i++)
 		ans.setBit(i, x.getBit(QInt::NUMBITS - 1));
