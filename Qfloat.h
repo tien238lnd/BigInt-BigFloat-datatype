@@ -4,7 +4,7 @@
 #include <string>
 #include "QInt.h"
 
-class QFloat {
+class Qfloat {
 	static const int NUMBYTES = 16;
 	static const int NUMBITS = 128;
 	static const int BIAS = 16383;
@@ -30,58 +30,58 @@ public:
 	// use for output in binary representation
 	std::string toBinString() const;
 
-	//return an int hold the value of the exponent of this QFloat
+	//return an int hold the value of the exponent of this Qfloat
 	int get_exponent() const;
 
 	//separate the integral part and fractional part
-	void modf(QFloat& integral, QFloat& fractional) const;
+	void modf(Qfloat& integral, Qfloat& fractional) const;
 	
-	//From a QFloat that equal or nearly equal to a QFloat between 0 to 9 (nearly equal because of tolerance of calculating)
+	//From a Qfloat that equal or nearly equal to a Qfloat between 0 to 9 (nearly equal because of tolerance of calculating)
 	//Return a char '0'->'9' corresponding to the input
 	char toChar() const;
 
-	//Convert from a string in base 10 to QFloat
+	//Convert from a string in base 10 to Qfloat
 	void fromDecString(std::string src);
-	//convert from a string in base 2 to QFloat
+	//convert from a string in base 2 to Qfloat
 	void fromBinString(std::string src);	// easy
 
 public:
 	//default constructor, value is Zero
-	QFloat();
+	Qfloat();
 
 	//Copy constructor
-	QFloat(const QFloat& src);
+	Qfloat(const Qfloat& src);
 
 	//constructor with string in decimal or binary
 	//in decimal, you can represent it like 100.001 or 6.022e23, -1.602e-19 (must be in normalized form)
 	//in binary, it must have "0b" in the front
-	QFloat(std::string src);
+	Qfloat(std::string src);
 
 	//constructor with const char*
-	QFloat(const char* src);
+	Qfloat(const char* src);
 
 	//assign operator
-	QFloat& operator=(const QFloat& src);
+	Qfloat& operator=(const Qfloat& src);
 
-	//assign to a string that perform QFloat value
-	QFloat& operator=(std::string srcStr);
+	//assign to a string that perform Qfloat value
+	Qfloat& operator=(std::string srcStr);
 
-	//assign to a const char array that perform QFloat value
-	QFloat& operator=(const char* srcStr);
+	//assign to a const char array that perform Qfloat value
+	Qfloat& operator=(const char* srcStr);
 
-	//input a QFloat qi from istream istr
-	friend std::istream& operator>>(std::istream& istr, QFloat& qf);
+	//input a Qfloat qi from istream istr
+	friend std::istream& operator>>(std::istream& istr, Qfloat& qf);
 
-	//output a QFloat qi to the ostream ostr
-	friend std::ostream& operator<<(std::ostream& ostr, const QFloat& qf);
+	//output a Qfloat qi to the ostream ostr
+	friend std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf);
 
 	// ----------------------------------------------------------
-	friend QFloat operator+(const QFloat& x, const QFloat& y);
-	friend QFloat operator-(const QFloat& x, const QFloat& y);
-	friend QFloat operator*(const QFloat& x, const QFloat& y);
-	friend QFloat operator/(const QFloat& x, const QFloat& y);
+	friend Qfloat operator+(const Qfloat& x, const Qfloat& y);
+	friend Qfloat operator-(const Qfloat& x, const Qfloat& y);
+	friend Qfloat operator*(const Qfloat& x, const Qfloat& y);
+	friend Qfloat operator/(const Qfloat& x, const Qfloat& y);
 
 };
-//check if QFloat q is zero, inf, nan, denormalize or normalize
+//check if Qfloat q is zero, inf, nan, denormalize or normalize
 //return the type code that is above in the static const char variable
-char CheckTypeofQFloat(const QFloat& q);
+char CheckTypeofQfloat(const Qfloat& q);

@@ -1,26 +1,26 @@
-﻿#include "QFloat.h"
+﻿#include "Qfloat.h"
 #include "QInt.h"
 
-QFloat _0 = "0b0";
-QFloat _1 = "0b0011111111111111";
-QFloat _2 = "0b0100000000000000";
-QFloat _3 = "0b01000000000000001";
-QFloat _4 = "0b0100000000000001";
-QFloat _5 = "0b010000000000000101";
-QFloat _6 = "0b01000000000000011";
-QFloat _7 = "0b010000000000000111";
-QFloat _8 = "0b0100000000000010";
-QFloat _9 = "0b0100000000000010001";
-QFloat _10 = "0b010000000000001001";
-QFloat _BCD[11] = { _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10 };
+Qfloat _0 = "0b0";
+Qfloat _1 = "0b0011111111111111";
+Qfloat _2 = "0b0100000000000000";
+Qfloat _3 = "0b01000000000000001";
+Qfloat _4 = "0b0100000000000001";
+Qfloat _5 = "0b010000000000000101";
+Qfloat _6 = "0b01000000000000011";
+Qfloat _7 = "0b010000000000000111";
+Qfloat _8 = "0b0100000000000010";
+Qfloat _9 = "0b0100000000000010001";
+Qfloat _10 = "0b010000000000001001";
+Qfloat _BCD[11] = { _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10 };
 
-QFloat _pINF = "0b0111111111111111";
+Qfloat _pINF = "0b0111111111111111";
 
-QFloat _nINF = "0b1111111111111111";
+Qfloat _nINF = "0b1111111111111111";
 
-QFloat _NaN = "0b0111111111111111111";
+Qfloat _NaN = "0b0111111111111111111";
 
-void QFloat::setBit(char i, bool b)
+void Qfloat::setBit(char i, bool b)
 {
 	if (b == 1)
 		this->bytes[i / 8] = this->bytes[i / 8] | (1 << i % 8);
@@ -29,17 +29,17 @@ void QFloat::setBit(char i, bool b)
 }
 
 
-bool QFloat::getBit(char i) const
+bool Qfloat::getBit(char i) const
 {
 	return (this->bytes[i / 8] >> i % 8) & 1;
 }
 
 // ham bo tro 
 
-// so sanh 2 mu cua 2 so QFloat, tra ve do chech lech 
+// so sanh 2 mu cua 2 so Qfloat, tra ve do chech lech 
 // Neu x > y tra ve so duong
 // Neu x < y tra ve so am
-int CompareExponent(const QFloat& x, const QFloat& y) {
+int CompareExponent(const Qfloat& x, const Qfloat& y) {
 
 	int ans = 0;
 	int pow2x = 1;
@@ -68,7 +68,7 @@ int CompareExponent(const QFloat& x, const QFloat& y) {
 	return ans;
 }
 
-int QFloat::get_exponent() const // of 2, not 10
+int Qfloat::get_exponent() const // of 2, not 10
 {
 	int res = 0;
 	char* pres = (char*)&res;
@@ -78,12 +78,12 @@ int QFloat::get_exponent() const // of 2, not 10
 
 	res &= ~(1 << 15);
 
-	res = res - QFloat::BIAS;
+	res = res - Qfloat::BIAS;
 	return res;
 
 }
 
-char CheckTypeofQFloat(const QFloat& q) {
+char CheckTypeofQfloat(const Qfloat& q) {
 	short tongmu = 0, tongsignicand = 0;
 	for (int i = 126; i >= 112; i--)
 	{
@@ -96,24 +96,24 @@ char CheckTypeofQFloat(const QFloat& q) {
 	}
 
 	if (tongmu + tongsignicand == 0) {
-		return QFloat::Zero;
+		return Qfloat::Zero;
 	}
 	else if (tongmu == 0 && tongsignicand != 0) {
-		return QFloat::Denormalize;
+		return Qfloat::Denormalize;
 	}
 	else if (tongmu == 15 && tongsignicand == 0) {
-		return QFloat::Infinity;
+		return Qfloat::Infinity;
 	}
 	else if (tongmu == 15 && tongsignicand != 0) {
-		return QFloat::Nan;
+		return Qfloat::Nan;
 	}
 	else {
-		return QFloat::Normal;
+		return Qfloat::Normal;
 	}
 
 }
 
-void QFloat::modf(QFloat& integral, QFloat& fractional) const
+void Qfloat::modf(Qfloat& integral, Qfloat& fractional) const
 {
 	integral = fractional = _0;
 	int exp = this->get_exponent();
@@ -215,9 +215,9 @@ void QFloat::modf(QFloat& integral, QFloat& fractional) const
 	}
 }
 
-char QFloat::toChar() const
+char Qfloat::toChar() const
 {
-	QFloat tcopy = *this;
+	Qfloat tcopy = *this;
 	//round up
 	int to_round = 111;
 	for (; to_round >= 0; to_round--)
@@ -265,18 +265,18 @@ char QFloat::toChar() const
 	return id + '0';
 }
 
-std::string print_from_integral_part(QFloat& src, int& exponent)
+std::string print_from_integral_part(Qfloat& src, int& exponent)
 {
 	// exponent = 0;
-	QFloat digit_extracted;	// in form of 0.x
+	Qfloat digit_extracted;	// in form of 0.x
 	std::string result;
 	// src is alway integral round
 	// recognize zero chain from point, go left to meet the first meaningful digit
 	while (true)
 	{
-		QFloat integral_with_1_digit_after_point = src / _10;
+		Qfloat integral_with_1_digit_after_point = src / _10;
 		integral_with_1_digit_after_point.modf(src, digit_extracted);
-		if (CheckTypeofQFloat(digit_extracted) == QFloat::Zero)
+		if (CheckTypeofQfloat(digit_extracted) == Qfloat::Zero)
 			exponent++;
 		else
 		{
@@ -286,33 +286,33 @@ std::string print_from_integral_part(QFloat& src, int& exponent)
 	while (true) {
 		digit_extracted = digit_extracted * _10; // 0.3 -> 3
 		result = digit_extracted.toChar() + result;
-		if (CheckTypeofQFloat(src) == QFloat::Zero)
+		if (CheckTypeofQfloat(src) == Qfloat::Zero)
 			break;
-		QFloat integral_with_1_digit_after_point = src / _10;
+		Qfloat integral_with_1_digit_after_point = src / _10;
 		integral_with_1_digit_after_point.modf(src, digit_extracted);
 	}
 	return result;
 }
 
-std::string print_from_fractional_part(QFloat& src, int& exponent, int digits_in_integral_part = 0)
+std::string print_from_fractional_part(Qfloat& src, int& exponent, int digits_in_integral_part = 0)
 {
-	QFloat digit_extracted;	// in form of x
+	Qfloat digit_extracted;	// in form of x
 	std::string result;
 	// src is alway a fraction less than 1 : 0.xxx...
 	// recognize zero chain from point, go right to meet the first meaningful digit
 	while (true)
 	{
-		QFloat fractional_with_1_digit_before_point = src * _10;
+		Qfloat fractional_with_1_digit_before_point = src * _10;
 		fractional_with_1_digit_before_point.modf(digit_extracted, src);
-		if (CheckTypeofQFloat(digit_extracted) == QFloat::Zero)
+		if (CheckTypeofQfloat(digit_extracted) == Qfloat::Zero)
 			exponent--;
 		else break;
 	}
 	while (true) {
 		result = result + digit_extracted.toChar();
-		if (CheckTypeofQFloat(src) == QFloat::Zero || (int)result.length() > (32 - (digits_in_integral_part != 0) * (digits_in_integral_part - exponent - 1)))
+		if (CheckTypeofQfloat(src) == Qfloat::Zero || (int)result.length() > (32 - (digits_in_integral_part != 0) * (digits_in_integral_part - exponent - 1)))
 			break;
-		QFloat fractional_with_1_digit_before_point = src * _10;
+		Qfloat fractional_with_1_digit_before_point = src * _10;
 		fractional_with_1_digit_before_point.modf(digit_extracted, src);
 	}
 	while (result.back() == '0')
@@ -320,30 +320,30 @@ std::string print_from_fractional_part(QFloat& src, int& exponent, int digits_in
 	return result;
 }
 
-std::string QFloat::toDecString() const
+std::string Qfloat::toDecString() const
 {
 	// HARDCORE
-	char type = CheckTypeofQFloat(*this);
+	char type = CheckTypeofQfloat(*this);
 	switch (type)
 	{
-	case QFloat::Zero :
+	case Qfloat::Zero :
 		return "0";
-	case QFloat::Infinity:
+	case Qfloat::Infinity:
 		if (this->getBit(127) == 0)
 			return "+inf";
 		else
 			return "-inf";
-	case QFloat::Nan :
+	case Qfloat::Nan :
 		return "NaN";
 	}
 	
 
-	QFloat integral, fractional;
+	Qfloat integral, fractional;
 	this->modf(integral, fractional);
 	std::string result;
 	// chia 2 th: e >= 0 và e < 0, dựa vào integral >= 1 hay ko
 	// integral = 1 thì e=0, > 1 thì e > 0, =0 thì e <0
-	if (CheckTypeofQFloat(fractional) == QFloat::Zero) // only integral part
+	if (CheckTypeofQfloat(fractional) == Qfloat::Zero) // only integral part
 	{
 		int exponent = 0;
 		result = print_from_integral_part(integral, exponent);
@@ -359,7 +359,7 @@ std::string QFloat::toDecString() const
 				result += "0";
 		}
 	}
-	else if (CheckTypeofQFloat(integral) == QFloat::Zero) // only fractional part
+	else if (CheckTypeofQfloat(integral) == Qfloat::Zero) // only fractional part
 	{
 		int exponent = -1;
 		result = print_from_fractional_part(fractional, exponent);
@@ -400,7 +400,7 @@ std::string QFloat::toDecString() const
 	return result;
 }
 
-std::string QFloat::toBinString() const
+std::string Qfloat::toBinString() const
 {
 	std::string out;
 	for (int i = 127; i >= 0; i--)
@@ -421,9 +421,9 @@ void round_overflow_digits(std::string& str)
 	}
 }
 
-QFloat calculate_from_integral_part(const std::string& src)	// exponent if pass must > 0
+Qfloat calculate_from_integral_part(const std::string& src)	// exponent if pass must > 0
 {
-	QFloat result;
+	Qfloat result;
 	for (int i = 0; i < int(src.length()); i++)
 	{
 		result = result * _10 + _BCD[src[i] - '0'];
@@ -431,9 +431,9 @@ QFloat calculate_from_integral_part(const std::string& src)	// exponent if pass 
 	return result;
 }
 
-QFloat calculate_from_fraction_part(const std::string& src)	// exponent if pass must < 0
+Qfloat calculate_from_fraction_part(const std::string& src)	// exponent if pass must < 0
 {
-	QFloat result;
+	Qfloat result;
 	for (int i = src.length() - 1; i >= 0; i--)
 	{
 		result = (result + _BCD[src[i] - '0']) / _10;
@@ -442,7 +442,7 @@ QFloat calculate_from_fraction_part(const std::string& src)	// exponent if pass 
 }
 
 
-void QFloat::fromDecString(std::string src)
+void Qfloat::fromDecString(std::string src)
 {
 	memset(bytes, 0, 16);
 
@@ -518,33 +518,33 @@ void QFloat::fromDecString(std::string src)
 }
 
 
-QFloat operator+(const QFloat& x, const QFloat& y) {
+Qfloat operator+(const Qfloat& x, const Qfloat& y) {
 
-	char checkX = CheckTypeofQFloat(x);
-	char checkY = CheckTypeofQFloat(y);
+	char checkX = CheckTypeofQfloat(x);
+	char checkY = CheckTypeofQfloat(y);
 
-	if (checkX == QFloat::Infinity || checkX == QFloat::Nan || checkY == QFloat::Infinity || checkY == QFloat::Nan) {
+	if (checkX == Qfloat::Infinity || checkX == Qfloat::Nan || checkY == Qfloat::Infinity || checkY == Qfloat::Nan) {
 		return _NaN;
 	}
-	else if (checkX == QFloat::Zero) {
+	else if (checkX == Qfloat::Zero) {
 		return y;
 	}
-	else if (checkY == QFloat::Zero) {
+	else if (checkY == Qfloat::Zero) {
 		return x;
 	}
 
 	QInt first, second, I, Mukq, khong("0"), mot("0b00000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-	QFloat F;
+	Qfloat F;
 	bool WeAreAdding2Denormalize = true;
 	bool OverFlowDenormalize = false;
 
-	if (checkX == QFloat::Normal) {
+	if (checkX == Qfloat::Normal) {
 		first.setBit(112, 1);
 		WeAreAdding2Denormalize = false;
 	}
 	else { first.setBit(112, 0); }
 
-	if (checkY == QFloat::Normal) {
+	if (checkY == Qfloat::Normal) {
 		second.setBit(112, 1);
 		WeAreAdding2Denormalize = false;
 	}
@@ -564,11 +564,11 @@ QFloat operator+(const QFloat& x, const QFloat& y) {
 
 		// Neu nhu su chech lech giua 2 so mu qua lon -> 1 so rat lon + 1 so rat be -> kq la  so rat lon
 		if (compareEXY > 112) {
-			QFloat resulf = x;
+			Qfloat resulf = x;
 			return resulf;
 		}
 		else if (compareEXY < -112) {
-			QFloat resulf = y;
+			Qfloat resulf = y;
 			return resulf;
 		}
 
@@ -703,8 +703,8 @@ QFloat operator+(const QFloat& x, const QFloat& y) {
 
 }
 
-QFloat operator-(const QFloat& x, const QFloat& y) {
-	QFloat second = y;
+Qfloat operator-(const Qfloat& x, const Qfloat& y) {
+	Qfloat second = y;
 	if (y.getBit(127) == 0) {
 		second.setBit(127, 1);
 	}
@@ -714,12 +714,12 @@ QFloat operator-(const QFloat& x, const QFloat& y) {
 	return x + second;
 }
 
-void QFloat::fromBinString(std::string src)
+void Qfloat::fromBinString(std::string src)
 {
 	int i = 0;
 	for (; i < int(src.length()); i++)
 	{
-		//set value from input string to our QFloat
+		//set value from input string to our Qfloat
 		this->setBit(127 - i, src[i] - '0');
 	}
 	for (i = 127 - i; i >= 0; i--)
@@ -729,12 +729,12 @@ void QFloat::fromBinString(std::string src)
 	}
 }
 
-QFloat::QFloat()
+Qfloat::Qfloat()
 {
 	memset(bytes, 0, 16);
 }
 
-QFloat::QFloat(const QFloat& src): QFloat()
+Qfloat::Qfloat(const Qfloat& src): Qfloat()
 {
 	for (int i = 0; i < 128; i++)
 	{
@@ -742,7 +742,7 @@ QFloat::QFloat(const QFloat& src): QFloat()
 	}
 }
 
-QFloat::QFloat(std::string src)
+Qfloat::Qfloat(std::string src)
 {
 	if (src[0] == '0' && src[1] == 'b')
 	{
@@ -758,10 +758,10 @@ QFloat::QFloat(std::string src)
 }
 
 
-QFloat::QFloat(const char* src) : QFloat(std::string(src))
+Qfloat::Qfloat(const char* src) : Qfloat(std::string(src))
 { }
 
-QFloat& QFloat::operator=(const QFloat& src)
+Qfloat& Qfloat::operator=(const Qfloat& src)
 {
 	if (this == &src)
 		return *this;
@@ -773,48 +773,48 @@ QFloat& QFloat::operator=(const QFloat& src)
 	return *this;
 }
 
-QFloat& QFloat::operator=(std::string srcStr)
+Qfloat& Qfloat::operator=(std::string srcStr)
 {
-	return *this = QFloat(srcStr);
+	return *this = Qfloat(srcStr);
 }
 
-QFloat& QFloat::operator=(const char* srcStr)
+Qfloat& Qfloat::operator=(const char* srcStr)
 {
-	return *this = QFloat(std::string(srcStr));
+	return *this = Qfloat(std::string(srcStr));
 }
 
-std::istream& operator>>(std::istream& istr, QFloat& qf)
+std::istream& operator>>(std::istream& istr, Qfloat& qf)
 {
 	// TODO: insert return statement here
 	return istr;
 }
 
-std::ostream& operator<<(std::ostream& ostr, const QFloat& qf)
+std::ostream& operator<<(std::ostream& ostr, const Qfloat& qf)
 {
 	ostr << qf.toDecString();
 	return ostr;
 }
 
 
-QFloat operator*(const QFloat& x, const QFloat& y)
+Qfloat operator*(const Qfloat& x, const Qfloat& y)
 {
-	QFloat opr1 = x;
-	QFloat opr2 = y;
-	QFloat res = "0b0";
-	int und = QFloat::NUMBITS - 16;
+	Qfloat opr1 = x;
+	Qfloat opr2 = y;
+	Qfloat res = "0b0";
+	int und = Qfloat::NUMBITS - 16;
 	opr1.setBit(127, opr1.getBit(127) != opr2.getBit(127));
 	opr2.setBit(127, opr1.getBit(127));
 
 	//if x==0
 	bool is_ = true;
-	for (int i = 0; i < QFloat::NUMBITS - 1; i++)
+	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
 		if (opr1.getBit(i) == 1) { is_ = false; break; }
 	}
 	if (is_) { return res; }
 	//if y==0
 	is_ = true;
-	for (int i = 0; i < QFloat::NUMBITS - 1; i++)
+	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
 		if (opr2.getBit(i) == 1) { is_ = false; break; }
 	}
@@ -860,7 +860,7 @@ QFloat operator*(const QFloat& x, const QFloat& y)
 
 
 	//get raw exp from two number
-	for (int i = und; i < QFloat::NUMBITS - 1; i++)
+	for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 	{
 		exp1 |= (1 << (i - und)) * opr1.getBit(i);
 		exp2 |= (1 << (i - und)) * opr2.getBit(i);
@@ -984,9 +984,9 @@ QFloat operator*(const QFloat& x, const QFloat& y)
 	if (common_pattern_last_for >= 10) { oprres[i] = oprres[i + 1]; }
 	///////////
 	///overflow
-	if (exp1 > QFloat::BIAS * 2)//overflow, raw exp >bias*2 mean exponent of opr1>bias
+	if (exp1 > Qfloat::BIAS * 2)//overflow, raw exp >bias*2 mean exponent of opr1>bias
 	{
-		for (int i = und; i < QFloat::NUMBITS - 1; i++)
+		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{
 			res.setBit(i, 1);
 		}
@@ -997,9 +997,9 @@ QFloat operator*(const QFloat& x, const QFloat& y)
 		return res;
 	}
 	//underflow
-	if (exp1 < -(QFloat::NUMBITS - 16))//underflow
+	if (exp1 < -(Qfloat::NUMBITS - 16))//underflow
 	{
-		for (int i = 0; i < QFloat::NUMBITS; i++)
+		for (int i = 0; i < Qfloat::NUMBITS; i++)
 		{
 			res.setBit(i, 0);
 		}
@@ -1046,30 +1046,30 @@ QFloat operator*(const QFloat& x, const QFloat& y)
 	/////
 	return res;
 }
-QFloat operator/(const QFloat& x, const QFloat& y)
+Qfloat operator/(const Qfloat& x, const Qfloat& y)
 {
-	QFloat opr1 = x;
-	QFloat opr2 = y;
-	QFloat res = "0b0";
-	int und = QFloat::NUMBITS - 16;
+	Qfloat opr1 = x;
+	Qfloat opr2 = y;
+	Qfloat res = "0b0";
+	int und = Qfloat::NUMBITS - 16;
 	opr1.setBit(127, opr1.getBit(127) != opr2.getBit(127));
 	opr2.setBit(127, opr1.getBit(127));
 
 	//if x==0
 	bool xis_0 = true;
-	for (int i = 0; i < QFloat::NUMBITS - 1; i++)
+	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
 		if (opr1.getBit(i) == 1) { xis_0 = false; }
 	}
 
 	bool yis_0 = true;
-	for (int i = 0; i < QFloat::NUMBITS - 1; i++)
+	for (int i = 0; i < Qfloat::NUMBITS - 1; i++)
 	{
 		if (opr2.getBit(i) == 1) { yis_0 = false; }
 	}
 
 	if (yis_0) {//return Nan
-		for (int i = und; i < QFloat::NUMBITS - 1; i++)
+		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{
 			res.setBit(i, 1);
 		}
@@ -1123,7 +1123,7 @@ QFloat operator/(const QFloat& x, const QFloat& y)
 	char opr1s[228] = { 0 };
 
 	//get raw exp from two number
-	for (int i = und; i < QFloat::NUMBITS - 1; i++)
+	for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 	{
 		exp1 |= (1 << (i - und)) * opr1.getBit(i);
 		exp2 |= (1 << (i - und)) * opr2.getBit(i);
@@ -1262,10 +1262,10 @@ QFloat operator/(const QFloat& x, const QFloat& y)
 
 	///////////
 	///overflow
-	if (exp1 > QFloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
+	if (exp1 > Qfloat::BIAS * 2 + 1)//overflow, raw exp >bias*2+1 mean exponent of opr1>bias
 	{
 		//infinity
-		for (int i = und; i < QFloat::NUMBITS - 1; i++)
+		for (int i = und; i < Qfloat::NUMBITS - 1; i++)
 		{
 			res.setBit(i, 1);
 		}
@@ -1276,9 +1276,9 @@ QFloat operator/(const QFloat& x, const QFloat& y)
 		return res;
 	}
 	//underflow
-	if (exp1 < -(QFloat::NUMBITS - 16))//underflow
+	if (exp1 < -(Qfloat::NUMBITS - 16))//underflow
 	{	//0
-		for (int i = 0; i < QFloat::NUMBITS; i++)
+		for (int i = 0; i < Qfloat::NUMBITS; i++)
 		{
 			res.setBit(i, 0);
 		}
